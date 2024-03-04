@@ -18,11 +18,10 @@ int main(void)
     nb_tours++;
 
     // Boucle de gameplay
-    while(nb_tours < 72)
+    while (nb_tours < 72)
     {
-        affichage(Grille, Pile,nb_tours, nb_joueurs, Joueurs, &h, &b, &g, &d);
-        interface_joueur(Grille, &Pile[nb_tours], nb_tours);
-        nb_tours++;
+        affichage(Grille, Pile, nb_tours, nb_joueurs, Joueurs, &h, &b, &g, &d);
+        interface_joueur(Grille, Pile, &nb_tours, nb_joueurs, Joueurs, &h, &b, &g, &d);
     }
 
     return 0;

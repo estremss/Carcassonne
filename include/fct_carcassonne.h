@@ -23,8 +23,8 @@ void rotation(struct tuile_s *);
 
 void afficher_tuile_en_cours(struct tuile_s);
 
-void poser_tuile(struct tuile_s[143][143], struct tuile_s[72], int);
+void poser_tuile(struct tuile_s[143][143], struct tuile_s[72], int *);
 
-void interface_joueur(struct tuile_s[143][143], struct tuile_s[72], int);
+void interface_joueur(struct tuile_s[143][143], struct tuile_s[72], int *, int, struct joueur_s *, int *, int *, int *, int *);
 
 #endif // FCT_CARCASSONNE

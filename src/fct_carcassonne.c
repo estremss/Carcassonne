@@ -223,7 +223,7 @@ void posable(struct tuile_s Grille[143][143], struct tuile_s T, int h, int b, in
     }
 }
 
-void poser_tuile(struct tuile_s Grille[143][143], struct tuile_s Pile[72], int nb_tours)
+void poser_tuile(struct tuile_s Grille[143][143], struct tuile_s Pile[72], int *nb_tours)
 {
     int x, y;
 
@@ -232,9 +232,16 @@ void poser_tuile(struct tuile_s Grille[143][143], struct tuile_s Pile[72], int n
     printf("Entrez le numéro de la colonne : ");
     scanf("%d", &y);
 
+    if (x > NB_TUILES || y > NB_TUILES || x < 0 || y < 0)
+    {
+        printf("Coordonnées inexistantes.");
+        poser_tuile(Grille, Pile, nb_tours);
+    }
+
     if (Grille[x][y].jouable == 'O')
     {
-        Grille[x][y] = depiler(Pile, nb_tours);
+        Grille[x][y] = depiler(Pile, *nb_tours);
+        *nb_tours += 1;
     }
     else
     {
@@ -252,7 +259,7 @@ void rotation(struct tuile_s *T) // 1 mars
     T->cotes[0] = tmp;
 }
 
-void interface_joueur(struct tuile_s Grille[143][143], struct tuile_s Pile[72], int nb_tours)
+void interface_joueur(struct tuile_s Grille[143][143], struct tuile_s Pile[72], int *nb_tours, int nb_joueurs, struct joueur_s *Joueur, int *h, int *b, int *g, int *d)
 {
     int choix;
 
@@ -262,15 +269,14 @@ void interface_joueur(struct tuile_s Grille[143][143], struct tuile_s Pile[72], 
     switch (choix)
     {
     case 1:
-        rotation(&Pile[nb_tours]);
-        // relancer l'affichage de la tuile après rotation
+        rotation(&Pile[*nb_tours]);
         break;
     case 2:
         poser_tuile(Grille, Pile, nb_tours);
         break;
     default:
         printf("Commande non reconnue.");
-        interface_joueur(Grille, Pile, nb_tours);
+        interface_joueur(Grille, Pile, nb_tours, nb_joueurs, Joueur, h, b, g, d);
     }
 }
 
