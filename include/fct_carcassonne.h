@@ -27,4 +27,8 @@ void poser_tuile(struct tuile_s[143][143], struct tuile_s[72], int *);
 
 void interface_joueur(struct tuile_s[143][143], struct tuile_s[72], int *, int, struct joueur_s *, int *, int *, int *, int *);
 
+void affichage_accueil(void);
+
+void afficher_joueurs(int, int, struct joueur_s*);
+
 #endif // FCT_CARCASSONNE
