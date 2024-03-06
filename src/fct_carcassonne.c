@@ -1,10 +1,14 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <time.h>
 #include "game_structures.h"
 #include "fct_carcassonne.h"
 
 #define NB_TUILES 72
+#define BHWHT "\e[1;97m"
+#define MAG "\e[0;35m"
+#define COLOR_RESET "\e[0m"
 
 void afficher_tuile_dbg(struct tuile_s t)
 {
@@ -20,6 +24,31 @@ struct tuile_s depiler(struct tuile_s *Pile, int nb_tours)
     Pile[nb_tours].jouable = 'X';
 
     return Pile[nb_tours];
+}
+
+void affichage_accueil(void)
+{
+    char entree;
+    system("clear");
+
+    printf("\n\n\n\n\n\t\t\t      # ###\n");
+    printf("\t\t\t    /  /###  /\n");
+    printf("\t\t\t   /  /  ###/\n");
+    printf("\t\t\t  /  ##   ##\n");
+    printf("\t\t\t /  ###\n");
+    printf("\t\t\t##   ##          /###   ###  /###     /###      /###     /###      /###   ###  /###   ###  /###     /##\n");
+    printf("\t\t\t##   ##         / ###  / ###/ #### / / ###  /  / ###  /  / #### / / #### /  / ###  / ###/ #### / ###/ #### / / ###\n");
+    printf("\t\t\t##   ##        /   ###/   ##   ###/ /   ###/  /   ###/  ##  ###/ ##  ###/  /   ###/   ##   ###/   ##   ###/ /   ###\n");
+    printf("\t\t\t##   ##       ##    ##    ##       ##        ##    ##  ####     ####      ##    ##    ##    ##    ##    ## ##    ###\n");
+    printf("\t\t\t##   ##       ##    ##    ##       ##        ##    ##    ###      ###     ##    ##    ##    ##    ##    ## ########\n");
+    printf("\t\t\t ##  ##       ##    ##    ##       ##        ##    ##      ###      ###   ##    ##    ##    ##    ##    ## #######\n");
+    printf("\t\t\t  ## #      / ##    ##    ##       ##        ##    ##        ###      ### ##    ##    ##    ##    ##    ## ##\n");
+    printf("\t\t\t   ###     /  ##    /#    ##       ###     / ##    /#   /###  ## /###  ## ##    ##    ##    ##    ##    ## ####    /\n");
+    printf("\t\t\t    ######/    ####/ ##   ###       ######/   ####/ ## / #### / / #### /   ######     ###   ###   ###   ### ######/\n");
+    printf("\t\t\t      ###       ###   ##   ###       #####     ###   ##   ###/     ###/     ####       ###   ###   ###   ### #####\n\n\n\n\n");
+    printf("\n\n\n\n\n\n\n\t\t\t\t\t\t\t\tAppuyez sur Entrée pour commencer à jouer.");
+
+    scanf("%c", &entree);
 }
 
 void deplacer_tuile_en_derniere_position(struct tuile_s *Pile, int nb_tours)
@@ -38,10 +67,11 @@ void melange(struct tuile_s *Pile)
 {
     int i, n = 72;
     struct tuile_s save;
+    srand((unsigned int)time(NULL));
 
     while (n > 1)
     {
-        i = rand() % n; // il faudra faire avec time.h par la suite
+        i = rand() % n;
         n--;
         save = Pile[n];
         Pile[n] = Pile[i];
@@ -51,9 +81,25 @@ void melange(struct tuile_s *Pile)
 
 void initialiser_partie(struct tuile_s *Pile, struct tuile_s Grille[143][143], int *nb_joueurs, int *nb_ia)
 {
-    printf("Nombre de joueurs : ");
+    system("clear");
+    printf("                                                                              |--__\n");
+    printf("                                                                              |\n");
+    printf("                                                                              X\n");
+    printf("                                                                     |-___   / \\       |--__\n");
+    printf("                                                                     |      =====      |\n");
+    printf("                                                                     X      | .:|      X\n");
+    printf("                                                                    / \\     | O |     / \\\n");
+    printf("                                                                   =====   |:  . |   =====\n");
+    printf("    [ o ]-------------[ o ]------------[ o ]                       |.: |__| .   : |__| :.|                            [ o ]-------------[ o ]-------------[ o ]\n");
+    printf("    [   ]     ___     [   ]            [   ]                       |  :|. :  ...   : |.  |                            [   ]             [   ]     ___     [   ]\n");
+    printf("    [   ]    /   \\    [   ]            [   ]               __   __W| .    .  ||| .      :|W__  --                     [   ]             [   ]    /   \\    [   ]\n");
+    printf("    [   ]   |     |   [   ]   o        [   ]             -- __  W  WWWW______\"\"\"______WWWW   W -----  --              [   ]             [   ]   |     |   [   ]\n");
+    printf("    [   ]   |     |   [   ]~\\_|_       [   ]        -  -     ___  ---    ____     ____----       --__  -              [   ]             [   ]   |     |   [   ]\n");
+    printf("    [___]___|_____|___[___]___|________[___]--_ -- _ -- _ -- _            --__    --    --__     -___        __-   _  [___]_____________[___]___|_____|___[___]\n");
+
+    printf("\v\v\v\v\vNombre de joueurs : ");
     scanf("%d", nb_joueurs);
-    printf("\nNombre d'IA : ");
+    printf("\n\nNombre d'IA : ");
     scanf("%d", nb_ia);
     printf("\n");
     Grille[NB_TUILES][NB_TUILES] = depiler(Pile, 0);
@@ -130,18 +176,59 @@ void afficher_tuile_en_cours(struct tuile_s T)
     printf("-----------\n\n");
 }
 
+void afficher_joueurs(int nb_joueurs, int nb_tours, struct joueur_s *Joueur)
+{
+    int i;
+    // Affichage 1ere ligne
+    for (i = 0; i < nb_joueurs; i++)
+    {
+        if (i != (nb_tours - 1) % nb_joueurs)
+        {
+            printf(MAG);
+            printf("Joueur %d           \t", i + 1);
+            printf(COLOR_RESET);
+        }
+        else
+            printf(BHWHT "Joueur %d           \t" COLOR_RESET, i + 1);
+    }
+    printf("\n");
+
+    // Affichage 2e ligne
+    for (i = 0; i < nb_joueurs; i++)
+    {
+        if (i != (nb_tours - 1) % nb_joueurs)
+        {
+            printf(MAG);
+            printf("Pions en main : %d/6\t", (6 - Joueur[i].pionsPoses));
+            printf(COLOR_RESET);
+        }
+        else
+            printf(BHWHT "Pions en main : %d/6\t" COLOR_RESET, (6 - Joueur[i].pionsPoses));
+    }
+    printf("\n");
+
+    // Affichage 3e ligne
+    for (i = 0; i < nb_joueurs; i++)
+    {
+        if (i != (nb_tours - 1) % nb_joueurs)
+        {
+            printf(MAG);
+            printf("Points : %3d      \t", Joueur[i].points);
+            printf(COLOR_RESET);
+        }
+        else
+            printf(BHWHT "Points : %3d      \t" COLOR_RESET, Joueur[i].points);
+    }
+    printf("\n\n");
+}
+
 void affichage(struct tuile_s Grille[143][143], struct tuile_s Pile[72], int nb_tours, int nb_joueurs, struct joueur_s *Joueur, int *h, int *b, int *g, int *d)
 {
-    int joueur = (((nb_tours - 1) % nb_joueurs) + 1); // relation maths pour afficher le bon joueur
     int i, j;
     int coord_max = NB_TUILES + nb_tours, coord_min = NB_TUILES - nb_tours; // pour ne pas recalculer à chaque itération
 
     system("clear");
-
-    printf("Joueur %d\n", joueur);
-    printf("Pions en main : %d/6\n", (6 - Joueur[joueur].pionsPoses));
-    printf("Points : %d\n\n", Joueur[joueur].points);
-    printf("Tuiles restantes : %d/72\n\n", NB_TUILES - nb_tours);
+    afficher_joueurs(nb_joueurs, nb_tours, Joueur);
     afficher_tuile_en_cours(Pile[nb_tours]);
     // Trouver les max
 
@@ -227,12 +314,12 @@ void poser_tuile(struct tuile_s Grille[143][143], struct tuile_s Pile[72], int *
 {
     int x, y;
 
-    printf("Entrez le numéro de la ligne : ");
-    scanf("%d", &x);
     printf("Entrez le numéro de la colonne : ");
     scanf("%d", &y);
+    printf("Entrez le numéro de la ligne : ");
+    scanf("%d", &x);
 
-    if (x > NB_TUILES || y > NB_TUILES || x < 0 || y < 0)
+    if (x > 2 * NB_TUILES - 2 || y > 2 * NB_TUILES - 2 || x < 0 || y < 0)
     {
         printf("Coordonnées inexistantes.");
         poser_tuile(Grille, Pile, nb_tours);
