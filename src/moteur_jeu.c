@@ -13,7 +13,9 @@ struct joueur_s Joueurs[5];
 
 int main(void)
 {
+
     parseur_csv("tuiles_base_simplifiees.csv", Pile);
+    affichage_accueil();
     initialiser_partie(Pile, Grille, &nb_joueurs, &nb_ia);
     nb_tours++;
 
@@ -23,6 +25,8 @@ int main(void)
         affichage(Grille, Pile, nb_tours, nb_joueurs, Joueurs, &h, &b, &g, &d);
         interface_joueur(Grille, Pile, &nb_tours, nb_joueurs, Joueurs, &h, &b, &g, &d);
     }
+
+    
 
     return 0;
 }
