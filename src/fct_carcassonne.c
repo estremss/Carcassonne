@@ -6,9 +6,29 @@
 #include "fct_carcassonne.h"
 
 #define NB_TUILES 72
-#define BHWHT "\e[1;97m"
-#define MAG "\e[0;35m"
-#define COLOR_RESET "\e[0m"
+
+#define RESET "\e[0m"
+
+// Bold high intensity text
+#define RED "\e[1;91m"
+#define GRN "\e[1;92m"
+#define YEL "\e[1;93m"
+#define BLU "\e[1;94m"
+#define MAG "\e[1;95m"
+#define CYN "\e[1;96m"
+#define WHT "\e[1;97m"
+
+// Backgrounds
+#define REDB "\e[0;101m"
+#define GRNB "\e[0;102m"
+#define YELB "\e[0;103m"
+#define BLUB "\e[0;104m"
+#define MAGB "\e[0;105m"
+#define CYNB "\e[0;106m"
+#define WHTB "\e[0;107m"
+
+// Underline
+#define UWHT "\e[4;37m"
 
 void afficher_tuile_dbg(struct tuile_s t)
 {
@@ -97,10 +117,10 @@ void initialiser_partie(struct tuile_s *Pile, struct tuile_s Grille[143][143], i
     printf("    [   ]   |     |   [   ]~\\_|_       [   ]        -  -     ___  ---    ____     ____----       --__  -              [   ]             [   ]   |     |   [   ]\n");
     printf("    [___]___|_____|___[___]___|________[___]--_ -- _ -- _ -- _            --__    --    --__     -___        __-   _  [___]_____________[___]___|_____|___[___]\n");
 
-    printf("\v\v\t\t\t\t\t\t\tProjet de programmation du jeu Carcassonne en langage C.\n\t\t\t\tCette version de Carcassonne se joue uniquement avec les villes, les villages, les abbayes et les routes.\n\n\t\t\t\t\t\t\tProjet  réalisé par Assalas ARAB et Evan ESTREMS.\n\n\n");
+    printf("\v\v\t\t\t\t\t\t\tProjet de programmation du jeu Carcassonne en langage C.\n\t\t\t\tCette version de Carcassonne se joue uniquement avec les villes, les villages, les abbayes et les routes.\n\n\t\t\t\t\t\t\tProjet réalisé par Assalas ARAB et Evan ESTREMS.\n\n\n");
     printf("    ___________________________________________________________________________________________________________________________________________________________\n");
-    
-    printf(BHWHT);
+
+    printf(WHT);
     printf("\n\t\t\t\t\t\t\t\t     __  __  _____  _   _  _   _ \n");
     printf("\t\t\t\t\t\t\t\t    |  \\/  || ____|| \\ | || | | |\n");
     printf("\t\t\t\t\t\t\t\t    | |\\/| ||  _|  |  \\| || | | |\n");
@@ -112,7 +132,7 @@ void initialiser_partie(struct tuile_s *Pile, struct tuile_s Grille[143][143], i
     printf("\n\n\tNombre d'IA : ");
     scanf("%d", nb_ia);
     printf("\n");
-    printf(COLOR_RESET);
+    printf(RESET);
     Grille[NB_TUILES][NB_TUILES] = depiler(Pile, 0);
     melange(Pile);
 }
@@ -187,6 +207,296 @@ void afficher_tuile_en_cours(struct tuile_s T)
     printf("-----------\n\n");
 }
 
+void afficher_ligne_couleur(struct tuile_s Grille[143][143], int l, int g, int d)
+{
+    int i;
+    // haut des tuiles
+    printf("    |");
+    for (i = g; i <= d; i++)
+    {
+        if (Grille[l][i].posee == 1)
+        {
+            switch (Grille[l][i].cotes[0])
+            {
+            case 'r':
+                printf(GRNB "  " YELB "  " GRNB "  " RESET);
+                break;
+
+            case 'v':
+            case 'b':
+                if (Grille[l][i].cotes[3] == 'v' || Grille[l][i].cotes[3] == 'b')
+                    printf(REDB "  " RESET);
+                else
+                    printf(GRNB "  " RESET);
+
+                printf(REDB "  " RESET);
+
+                if (Grille[l][i].cotes[1] == 'v' || Grille[l][i].cotes[1] == 'b')
+                    printf(REDB "  " RESET);
+                else
+                    printf(GRNB "  " RESET);
+                break;
+
+            case 'p':
+                printf(GRNB "      " RESET);
+                break;
+
+            default:
+                break;
+            }
+        }
+        else
+            printf("      ");
+    }
+    printf("|\n");
+    printf("%3d |", l);
+    // tuiles du milieu
+    for (i = g; i <= d; i++)
+    {
+        if (Grille[l][i].posee == 1)
+        {
+            // Grille[l][i].cotes[3]
+            switch (Grille[l][i].cotes[3])
+            {
+            case 'r':
+                printf(YELB "  " RESET);
+                break;
+
+            case 'p':
+                printf(GRNB "  " RESET);
+                break;
+
+            case 'v':
+            case 'b':
+                printf(REDB "  " RESET);
+                break;
+
+            default:
+                break;
+            }
+            // Grille[l][i].centre
+            switch (Grille[l][i].centre)
+            {
+            case 'r':
+                printf(YELB "  " RESET);
+                break;
+
+            case 'p':
+                printf(GRNB "  " RESET);
+                break;
+
+            case 'v':
+            case 'b':
+            case 'V':
+                printf(REDB "  " RESET);
+                break;
+            case 'a':
+                printf(WHTB "  " RESET);
+
+            default:
+                break;
+            }
+            // Grille[l][i].cotes[1]
+            switch (Grille[l][i].cotes[1])
+            {
+            case 'r':
+                printf(YELB "  " RESET);
+                break;
+
+            case 'p':
+                printf(GRNB "  " RESET);
+                break;
+
+            case 'v':
+            case 'b':
+                printf(REDB "  " RESET);
+                break;
+
+            default:
+                break;
+            }
+        }
+        else
+        {
+            if (Grille[l][i].jouable == 'X')
+            {
+                printf("      ");
+            }
+            else
+            {
+                printf("  %c   ", Grille[l][i].jouable);
+            }
+        }
+    }
+    printf("| %d\n", l);
+    printf("    |");
+    // T.cotes[2]
+    for (i = g; i <= d; i++)
+    {
+        if (Grille[l][i].posee == 1)
+        {
+            switch (Grille[l][i].cotes[2])
+            {
+            case 'r':
+                printf(GRNB "  " YELB "  " GRNB "  " RESET);
+                break;
+
+            case 'v':
+            case 'b':
+                if (Grille[l][i].cotes[3] == 'v' || Grille[l][i].cotes[3] == 'b')
+                    printf(REDB "  " RESET);
+                else
+                    printf(GRNB "  " RESET);
+
+                printf(REDB "  " RESET);
+
+                if (Grille[l][i].cotes[1] == 'v' || Grille[l][i].cotes[1] == 'b')
+                    printf(REDB "  " RESET);
+                else
+                    printf(GRNB "  " RESET);
+                break;
+
+            case 'p':
+                printf(GRNB "      " RESET);
+                break;
+
+            default:
+                break;
+            }
+        }
+        else
+            printf("      ");
+    }
+    printf("|\n");
+}
+
+void afficher_tuile_en_cours_couleur(struct tuile_s T)
+{
+    printf("_______________________________________________________________________________________________________________________________________\n\n");
+    printf(REDB "\t  " RESET " Villes et villages    " GRNB "  " RESET " Prés    " WHTB "  " RESET " Abbayes    " YELB "  " RESET " Routes    " WHT "♟" RESET " Pions    " WHT "🛡 " RESET " Blason"
+                "\n\n");
+    printf(UWHT "Tuile en cours :\n\n" RESET);
+    // T.cotes[0]
+    switch (T.cotes[0])
+    {
+    case 'r':
+        printf(GRNB "\t  " YELB "  " GRNB "  " RESET "\n");
+        break;
+
+    case 'v':
+    case 'b':
+        if (T.cotes[3] == 'v' || T.cotes[3] == 'b')
+            printf(REDB "\t  " RESET);
+        else
+            printf(GRNB "\t  " RESET);
+
+        printf(REDB "  " RESET);
+
+        if (T.cotes[1] == 'v' || T.cotes[1] == 'b')
+            printf(REDB "  " RESET "\n");
+        else
+            printf(GRNB "  " RESET "\n");
+        break;
+
+    case 'p':
+        printf(GRNB "\t      " RESET "\n");
+        break;
+
+    default:
+        break;
+    }
+    // T.cotes[3]
+    switch (T.cotes[3])
+    {
+    case 'r':
+        printf(YELB "\t  " RESET);
+        break;
+
+    case 'p':
+        printf(GRNB "\t  " RESET);
+        break;
+
+    case 'v':
+    case 'b':
+        printf(REDB "\t  " RESET);
+        break;
+
+    default:
+        break;
+    }
+    // T.centre
+    switch (T.centre)
+    {
+    case 'r':
+        printf(YELB "  " RESET);
+        break;
+
+    case 'p':
+        printf(GRNB "  " RESET);
+        break;
+
+    case 'v':
+    case 'b':
+    case 'V':
+        printf(REDB "  " RESET);
+        break;
+    case 'a':
+        printf(WHTB "  " RESET);
+
+    default:
+        break;
+    }
+    // T.cotes[1]
+    switch (T.cotes[1])
+    {
+    case 'r':
+        printf(YELB "  " RESET "\tTournez la tuile pour voir d'autres emplacements possibles (O)\n");
+        break;
+
+    case 'p':
+        printf(GRNB "  " RESET "\tTournez la tuile pour voir d'autres emplacements possibles (O)\n");
+        break;
+
+    case 'v':
+    case 'b':
+        printf(REDB "  " RESET "\tTournez la tuile pour voir d'autres emplacements possibles (O)\n");
+        break;
+
+    default:
+        break;
+    }
+    // T.cotes[2]
+    switch (T.cotes[2])
+    {
+    case 'r':
+        printf(GRNB "\t  " YELB "  " GRNB "  " RESET "\n");
+        break;
+
+    case 'v':
+    case 'b':
+        if (T.cotes[3] == 'v' || T.cotes[3] == 'b')
+            printf(REDB "\t  " RESET);
+        else
+            printf(GRNB "\t  " RESET);
+
+        printf(REDB "  " RESET);
+
+        if (T.cotes[1] == 'v' || T.cotes[1] == 'b')
+            printf(REDB "  " RESET "\n");
+        else
+            printf(GRNB "  " RESET "\n");
+        break;
+
+    case 'p':
+        printf(GRNB "\t      " RESET "\n");
+        break;
+
+    default:
+        break;
+    }
+    printf("\n");
+}
+
 void afficher_joueurs(int nb_joueurs, int nb_tours, struct joueur_s *Joueur)
 {
     int i;
@@ -197,10 +507,10 @@ void afficher_joueurs(int nb_joueurs, int nb_tours, struct joueur_s *Joueur)
         {
             printf(MAG);
             printf("Joueur %d           \t", i + 1);
-            printf(COLOR_RESET);
+            printf(RESET);
         }
         else
-            printf(BHWHT "Joueur %d           \t" COLOR_RESET, i + 1);
+            printf(WHT "Joueur %d           \t" RESET, i + 1);
     }
     printf("\n");
 
@@ -211,10 +521,10 @@ void afficher_joueurs(int nb_joueurs, int nb_tours, struct joueur_s *Joueur)
         {
             printf(MAG);
             printf("Pions en main : %d/6\t", (6 - Joueur[i].pionsPoses));
-            printf(COLOR_RESET);
+            printf(RESET);
         }
         else
-            printf(BHWHT "Pions en main : %d/6\t" COLOR_RESET, (6 - Joueur[i].pionsPoses));
+            printf(WHT "Pions en main : %d/6\t" RESET, (6 - Joueur[i].pionsPoses));
     }
     printf("\n");
 
@@ -225,12 +535,12 @@ void afficher_joueurs(int nb_joueurs, int nb_tours, struct joueur_s *Joueur)
         {
             printf(MAG);
             printf("Points : %3d      \t", Joueur[i].points);
-            printf(COLOR_RESET);
+            printf(RESET);
         }
         else
-            printf(BHWHT "Points : %3d      \t" COLOR_RESET, Joueur[i].points);
+            printf(WHT "Points : %3d      \t" RESET, Joueur[i].points);
     }
-    printf("\n\n");
+    printf("\n");
 }
 
 void affichage(struct tuile_s Grille[143][143], struct tuile_s Pile[72], int nb_tours, int nb_joueurs, struct joueur_s *Joueur, int *h, int *b, int *g, int *d)
@@ -240,7 +550,8 @@ void affichage(struct tuile_s Grille[143][143], struct tuile_s Pile[72], int nb_
 
     system("clear");
     afficher_joueurs(nb_joueurs, nb_tours, Joueur);
-    afficher_tuile_en_cours(Pile[nb_tours]);
+    afficher_tuile_en_cours_couleur(Pile[nb_tours]);
+
     // Trouver les max
 
     for (i = coord_min; i <= coord_max; i++)
@@ -269,12 +580,12 @@ void affichage(struct tuile_s Grille[143][143], struct tuile_s Pile[72], int nb_
     printf("    ");
     for (i = *g - 1; i <= *d + 1; i++)
     {
-        printf("   %3d    ", i);
+        printf("  %3d ", i);
     }
     printf("\n    ");
 
     // Affichage ligne de tirets
-    for (i = 0; i < 10 * (*d - *g + 3) + 1; i++)
+    for (i = 0; i < 6 * (*d - *g + 3) + 2; i++)
     {
         printf("-");
     }
@@ -283,8 +594,16 @@ void affichage(struct tuile_s Grille[143][143], struct tuile_s Pile[72], int nb_
     // Affichage de la grille
     for (i = *h - 1; i <= *b + 1; i++)
     {
-        afficher_ligne(Grille, i, *g - 1, *d + 1);
+        afficher_ligne_couleur(Grille, i, *g - 1, *d + 1);
     }
+
+    // Affichage ligne de tirets
+    printf("    ");
+    for (i = 0; i < 6 * (*d - *g + 3) + 2; i++)
+    {
+        printf("-");
+    }
+    printf("\n");
 
     // Affichage ordonnées du bas
     printf("    ");

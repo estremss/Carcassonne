@@ -3,11 +3,15 @@
 #include "fct_carcassonne.h"
 
 #define NB_TUILES 72
-#define YELB "\e[0;103m"
+#define GRN "\e[1;92m"
 #define RESET "\e[0m"
-#define BHRED "\e[1;91m"
-#define BHWHT "\e[1;97m"
-#define RED "\e[0;31m"
+#define REDB "\e[0;101m"
+#define GRNB "\e[0;102m"
+#define YELB "\e[0;103m"
+#define BLUB "\e[0;104m"
+#define MAGB "\e[0;105m"
+#define CYNB "\e[0;106m"
+#define WHTB "\e[0;107m"
 
 int nb_tours = 0, nb_joueurs, nb_ia;
 int h = 143, b = 0, g = 143, d = 0;
@@ -29,7 +33,6 @@ int main(void)
         affichage(Grille, Pile, nb_tours, nb_joueurs, Joueurs, &h, &b, &g, &d);
         interface_joueur(Grille, Pile, &nb_tours, nb_joueurs, Joueurs, &h, &b, &g, &d);
     }
-
     
 
     return 0;
