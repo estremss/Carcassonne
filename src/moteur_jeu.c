@@ -3,6 +3,11 @@
 #include "fct_carcassonne.h"
 
 #define NB_TUILES 72
+#define YELB "\e[0;103m"
+#define RESET "\e[0m"
+#define BHRED "\e[1;91m"
+#define BHWHT "\e[1;97m"
+#define RED "\e[0;31m"
 
 int nb_tours = 0, nb_joueurs, nb_ia;
 int h = 143, b = 0, g = 143, d = 0;
@@ -13,7 +18,6 @@ struct joueur_s Joueurs[5];
 
 int main(void)
 {
-
     parseur_csv("tuiles_base_simplifiees.csv", Pile);
     affichage_accueil();
     initialiser_partie(Pile, Grille, &nb_joueurs, &nb_ia);

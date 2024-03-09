@@ -82,7 +82,7 @@ void melange(struct tuile_s *Pile)
 void initialiser_partie(struct tuile_s *Pile, struct tuile_s Grille[143][143], int *nb_joueurs, int *nb_ia)
 {
     system("clear");
-    printf("                                                                              |--__\n");
+    printf("\n                                                                              |--__\n");
     printf("                                                                              |\n");
     printf("                                                                              X\n");
     printf("                                                                     |-___   / \\       |--__\n");
@@ -97,11 +97,22 @@ void initialiser_partie(struct tuile_s *Pile, struct tuile_s Grille[143][143], i
     printf("    [   ]   |     |   [   ]~\\_|_       [   ]        -  -     ___  ---    ____     ____----       --__  -              [   ]             [   ]   |     |   [   ]\n");
     printf("    [___]___|_____|___[___]___|________[___]--_ -- _ -- _ -- _            --__    --    --__     -___        __-   _  [___]_____________[___]___|_____|___[___]\n");
 
-    printf("\v\v\v\v\vNombre de joueurs : ");
+    printf("\v\v\t\t\t\t\t\t\tProjet de programmation du jeu Carcassonne en langage C.\n\t\t\t\tCette version de Carcassonne se joue uniquement avec les villes, les villages, les abbayes et les routes.\n\n\t\t\t\t\t\t\tProjet  réalisé par Assalas ARAB et Evan ESTREMS.\n\n\n");
+    printf("    ___________________________________________________________________________________________________________________________________________________________\n");
+    
+    printf(BHWHT);
+    printf("\n\t\t\t\t\t\t\t\t     __  __  _____  _   _  _   _ \n");
+    printf("\t\t\t\t\t\t\t\t    |  \\/  || ____|| \\ | || | | |\n");
+    printf("\t\t\t\t\t\t\t\t    | |\\/| ||  _|  |  \\| || | | |\n");
+    printf("\t\t\t\t\t\t\t\t    | |  | || |___ | |\\  || |_| |\n");
+    printf("\t\t\t\t\t\t\t\t    |_|  |_||_____||_| \\_| \\___/ \n");
+
+    printf("\v\v\v\v\v\tNombre de joueurs : ");
     scanf("%d", nb_joueurs);
-    printf("\n\nNombre d'IA : ");
+    printf("\n\n\tNombre d'IA : ");
     scanf("%d", nb_ia);
     printf("\n");
+    printf(COLOR_RESET);
     Grille[NB_TUILES][NB_TUILES] = depiler(Pile, 0);
     melange(Pile);
 }
