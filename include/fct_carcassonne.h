@@ -27,12 +27,12 @@ void afficher_tuile_en_cours(struct tuile_s);
 
 void afficher_tuile_en_cours_couleur(struct tuile_s);
 
-void poser_tuile(struct tuile_s[143][143], struct tuile_s[72], int *);
+void poser_tuile(struct tuile_s[143][143], struct tuile_s[72], int *, int, struct joueur_s *);
 
-void interface_joueur(struct tuile_s[143][143], struct tuile_s[72], int *, int, struct joueur_s *, int *, int *, int *, int *);
+void interface_joueur(struct tuile_s[143][143], struct tuile_s[72], int *, int, struct joueur_s *);
 
 void affichage_accueil(void);
 
-void afficher_joueurs(int, int, struct joueur_s*);
+void afficher_joueurs(int, int, struct joueur_s *);
 
 #endif // FCT_CARCASSONNE

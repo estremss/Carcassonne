@@ -10,6 +10,7 @@
 #define RESET "\e[0m"
 
 // Bold high intensity text
+#define BLK "\e[1;90m"
 #define RED "\e[1;91m"
 #define GRN "\e[1;92m"
 #define YEL "\e[1;93m"
@@ -18,7 +19,8 @@
 #define CYN "\e[1;96m"
 #define WHT "\e[1;97m"
 
-// Backgrounds
+// Backgrounds High Intensity
+#define BLKHB "\e[0;100m"
 #define REDB "\e[0;101m"
 #define GRNB "\e[0;102m"
 #define YELB "\e[0;103m"
@@ -26,6 +28,15 @@
 #define MAGB "\e[0;105m"
 #define CYNB "\e[0;106m"
 #define WHTB "\e[0;107m"
+
+// Regular backgrounds
+#define REDBL "\e[41m"
+#define YELBL "\e[43m"
+#define BLUBL "\e[44m"
+#define MAGBL "\e[45m"
+#define CYNBL "\e[46m"
+#define WHTBL "\e[47m"
+#define BLKBL "\e[40m"
 
 // Underline
 #define UWHT "\e[4;37m"
@@ -121,12 +132,15 @@ void initialiser_partie(struct tuile_s *Pile, struct tuile_s Grille[143][143], i
     printf("    ___________________________________________________________________________________________________________________________________________________________\n");
 
     printf(WHT);
-    printf("\n\t\t\t\t\t\t\t\t     __  __  _____  _   _  _   _ \n");
-    printf("\t\t\t\t\t\t\t\t    |  \\/  || ____|| \\ | || | | |\n");
-    printf("\t\t\t\t\t\t\t\t    | |\\/| ||  _|  |  \\| || | | |\n");
-    printf("\t\t\t\t\t\t\t\t    | |  | || |___ | |\\  || |_| |\n");
-    printf("\t\t\t\t\t\t\t\t    |_|  |_||_____||_| \\_| \\___/ \n");
-
+    printf("\n");
+    printf("__________________________________________________________________*************************************_________________________________________________________");
+    printf("\n\t\t\t\t\t\t\t\t  |    __  __  _____  _   _  _   _    |\n");
+    printf("\t\t\t\t\t\t\t\t  |   |  \\/  || ____|| \\ | || | | |   |\n");
+    printf("\t\t\t\t\t\t\t\t  |   | |\\/| ||  _|  |  \\| || | | |   |\n");
+    printf("\t\t\t\t\t\t\t\t  |   | |  | || |___ | |\\  || |_| |   |\n");
+    printf("\t\t\t\t\t\t\t\t  |   |_|  |_||_____||_| \\_| \\___/    |\n");
+    printf("\t\t\t\t\t\t\t\t  |                                   |\n");
+    printf("__________________________________________________________________*************************************_________________________________________________________\n");
     printf("\v\v\v\v\v\tNombre de joueurs : ");
     scanf("%d", nb_joueurs);
     printf("\n\n\tNombre d'IA : ");
@@ -223,16 +237,31 @@ void afficher_ligne_couleur(struct tuile_s Grille[143][143], int l, int g, int d
                 break;
 
             case 'v':
-            case 'b':
-                if (Grille[l][i].cotes[3] == 'v' || Grille[l][i].cotes[3] == 'b')
+                if (Grille[l][i].cotes[3] == 'v' && Grille[l][i].centre == 'v')
                     printf(REDB "  " RESET);
                 else
                     printf(GRNB "  " RESET);
 
                 printf(REDB "  " RESET);
 
-                if (Grille[l][i].cotes[1] == 'v' || Grille[l][i].cotes[1] == 'b')
+                if (Grille[l][i].cotes[1] == 'v' && Grille[l][i].centre == 'v')
                     printf(REDB "  " RESET);
+
+                else
+                    printf(GRNB "  " RESET);
+
+                break;
+            case 'b':
+                if (Grille[l][i].cotes[3] == 'b' && Grille[l][i].centre == 'b')
+                    printf(REDB "  " RESET);
+                else
+                    printf(GRNB "  " RESET);
+
+                printf(REDB "  " RESET);
+
+                if (Grille[l][i].cotes[1] == 'b' && Grille[l][i].centre == 'b')
+                    printf(REDB "  " RESET);
+
                 else
                     printf(GRNB "  " RESET);
                 break;
@@ -246,7 +275,16 @@ void afficher_ligne_couleur(struct tuile_s Grille[143][143], int l, int g, int d
             }
         }
         else
-            printf("      ");
+        {
+            if (Grille[l][i].jouable == 'X')
+            {
+                printf("      ");
+            }
+            else
+            {
+                printf(WHTBL "      " RESET);
+            }
+        }
     }
     printf("|\n");
     printf("%3d |", l);
@@ -267,6 +305,9 @@ void afficher_ligne_couleur(struct tuile_s Grille[143][143], int l, int g, int d
                 break;
 
             case 'v':
+                printf(REDB "  " RESET);
+                break;
+
             case 'b':
                 printf(REDB "  " RESET);
                 break;
@@ -286,12 +327,23 @@ void afficher_ligne_couleur(struct tuile_s Grille[143][143], int l, int g, int d
                 break;
 
             case 'v':
+                if ((Grille[l][i].cotes[0] == 'v' && Grille[l][i].cotes[2] == 'v') || (Grille[l][i].cotes[1] == 'v' && Grille[l][i].cotes[3] == 'v'))
+                    printf(REDB "  " RESET);
+                else
+                    printf(GRNB "  " RESET);
+                break;
             case 'b':
+                if ((Grille[l][i].cotes[0] == 'b' && Grille[l][i].cotes[2] == 'b') || (Grille[l][i].cotes[1] == 'b' && Grille[l][i].cotes[3] == 'b'))
+                    printf(REDB WHT "🛡" RESET);
+                else
+                    printf(GRNB "  " RESET);
+                break;
             case 'V':
-                printf(REDB "  " RESET);
+                printf(BLKHB "  " RESET);
                 break;
             case 'a':
                 printf(WHTB "  " RESET);
+                break;
 
             default:
                 break;
@@ -324,7 +376,7 @@ void afficher_ligne_couleur(struct tuile_s Grille[143][143], int l, int g, int d
             }
             else
             {
-                printf("  %c   ", Grille[l][i].jouable);
+                printf(WHTBL "      " RESET);
             }
         }
     }
@@ -342,15 +394,28 @@ void afficher_ligne_couleur(struct tuile_s Grille[143][143], int l, int g, int d
                 break;
 
             case 'v':
-            case 'b':
-                if (Grille[l][i].cotes[3] == 'v' || Grille[l][i].cotes[3] == 'b')
+                if (Grille[l][i].cotes[3] == 'v' && Grille[l][i].centre == 'v')
                     printf(REDB "  " RESET);
                 else
                     printf(GRNB "  " RESET);
 
                 printf(REDB "  " RESET);
 
-                if (Grille[l][i].cotes[1] == 'v' || Grille[l][i].cotes[1] == 'b')
+                if (Grille[l][i].cotes[1] == 'v' && Grille[l][i].centre == 'v')
+                    printf(REDB "  " RESET);
+                else
+                    printf(GRNB "  " RESET);
+                break;
+
+            case 'b':
+                if (Grille[l][i].cotes[3] == 'b' && Grille[l][i].centre == 'b')
+                    printf(REDB "  " RESET);
+                else
+                    printf(GRNB "  " RESET);
+
+                printf(REDB "  " RESET);
+
+                if (Grille[l][i].cotes[1] == 'b' && Grille[l][i].centre == 'b')
                     printf(REDB "  " RESET);
                 else
                     printf(GRNB "  " RESET);
@@ -365,7 +430,16 @@ void afficher_ligne_couleur(struct tuile_s Grille[143][143], int l, int g, int d
             }
         }
         else
-            printf("      ");
+        {
+            if (Grille[l][i].jouable == 'X')
+            {
+                printf("      ");
+            }
+            else
+            {
+                printf(WHTBL "      " RESET);
+            }
+        }
     }
     printf("|\n");
 }
@@ -377,48 +451,68 @@ void afficher_tuile_en_cours_couleur(struct tuile_s T)
                 "\n\n");
     printf(UWHT "Tuile en cours :\n\n" RESET);
     // T.cotes[0]
+    printf("\t");
     switch (T.cotes[0])
     {
     case 'r':
-        printf(GRNB "\t  " YELB "  " GRNB "  " RESET "\n");
+        printf(GRNB "  " YELB "  " GRNB "  " RESET);
         break;
 
     case 'v':
-    case 'b':
-        if (T.cotes[3] == 'v' || T.cotes[3] == 'b')
-            printf(REDB "\t  " RESET);
+        if (T.cotes[3] == 'v' && T.centre == 'v')
+            printf(REDB "  " RESET);
         else
-            printf(GRNB "\t  " RESET);
+            printf(GRNB "  " RESET);
 
         printf(REDB "  " RESET);
 
-        if (T.cotes[1] == 'v' || T.cotes[1] == 'b')
-            printf(REDB "  " RESET "\n");
+        if (T.cotes[1] == 'v' && T.centre == 'v')
+            printf(REDB "  " RESET);
+
         else
-            printf(GRNB "  " RESET "\n");
+            printf(GRNB "  " RESET);
+
+        break;
+    case 'b':
+        if (T.cotes[3] == 'b' && T.centre == 'b')
+            printf(REDB "  " RESET);
+        else
+            printf(GRNB "  " RESET);
+
+        printf(REDB "  " RESET);
+
+        if (T.cotes[1] == 'b' && T.centre == 'b')
+            printf(REDB "  " RESET);
+
+        else
+            printf(GRNB "  " RESET);
         break;
 
     case 'p':
-        printf(GRNB "\t      " RESET "\n");
+        printf(GRNB "      " RESET);
         break;
 
     default:
         break;
     }
+    printf("\n\t");
     // T.cotes[3]
     switch (T.cotes[3])
     {
     case 'r':
-        printf(YELB "\t  " RESET);
+        printf(YELB "  " RESET);
         break;
 
     case 'p':
-        printf(GRNB "\t  " RESET);
+        printf(GRNB "  " RESET);
         break;
 
     case 'v':
+        printf(REDB "  " RESET);
+        break;
+
     case 'b':
-        printf(REDB "\t  " RESET);
+        printf(REDB "  " RESET);
         break;
 
     default:
@@ -436,12 +530,23 @@ void afficher_tuile_en_cours_couleur(struct tuile_s T)
         break;
 
     case 'v':
+        if ((T.cotes[0] == 'v' && T.cotes[2] == 'v') || (T.cotes[1] == 'v' && T.cotes[3] == 'v'))
+            printf(REDB "  " RESET);
+        else
+            printf(GRNB "  " RESET);
+        break;
     case 'b':
+        if ((T.cotes[0] == 'b' && T.cotes[2] == 'b') || (T.cotes[1] == 'b' && T.cotes[3] == 'b'))
+            printf(REDB WHT "🛡" RESET);
+        else
+            printf(GRNB "  " RESET);
+        break;
     case 'V':
-        printf(REDB "  " RESET);
+        printf(BLKHB "  " RESET);
         break;
     case 'a':
         printf(WHTB "  " RESET);
+        break;
 
     default:
         break;
@@ -450,56 +555,71 @@ void afficher_tuile_en_cours_couleur(struct tuile_s T)
     switch (T.cotes[1])
     {
     case 'r':
-        printf(YELB "  " RESET "\tTournez la tuile pour voir d'autres emplacements possibles (O)\n");
+        printf(YELB "  " RESET);
         break;
 
     case 'p':
-        printf(GRNB "  " RESET "\tTournez la tuile pour voir d'autres emplacements possibles (O)\n");
+        printf(GRNB "  " RESET);
         break;
 
     case 'v':
     case 'b':
-        printf(REDB "  " RESET "\tTournez la tuile pour voir d'autres emplacements possibles (O)\n");
+        printf(REDB "  " RESET);
         break;
 
     default:
         break;
     }
+    printf("\n\t");
     // T.cotes[2]
     switch (T.cotes[2])
-    {
-    case 'r':
-        printf(GRNB "\t  " YELB "  " GRNB "  " RESET "\n");
-        break;
+            {
+            case 'r':
+                printf(GRNB "  " YELB "  " GRNB "  " RESET);
+                break;
 
-    case 'v':
-    case 'b':
-        if (T.cotes[3] == 'v' || T.cotes[3] == 'b')
-            printf(REDB "\t  " RESET);
-        else
-            printf(GRNB "\t  " RESET);
+            case 'v':
+                if (T.cotes[3] == 'v' && T.centre == 'v')
+                    printf(REDB "  " RESET);
+                else
+                    printf(GRNB "  " RESET);
 
-        printf(REDB "  " RESET);
+                printf(REDB "  " RESET);
 
-        if (T.cotes[1] == 'v' || T.cotes[1] == 'b')
-            printf(REDB "  " RESET "\n");
-        else
-            printf(GRNB "  " RESET "\n");
-        break;
+                if (T.cotes[1] == 'v' && T.centre == 'v')
+                    printf(REDB "  " RESET);
+                else
+                    printf(GRNB "  " RESET);
+                break;
 
-    case 'p':
-        printf(GRNB "\t      " RESET "\n");
-        break;
+            case 'b':
+                if (T.cotes[3] == 'b' && T.centre == 'b')
+                    printf(REDB "  " RESET);
+                else
+                    printf(GRNB "  " RESET);
 
-    default:
-        break;
-    }
-    printf("\n");
+                printf(REDB "  " RESET);
+
+                if (T.cotes[1] == 'b' && T.centre == 'b')
+                    printf(REDB "  " RESET);
+                else
+                    printf(GRNB "  " RESET);
+                break;
+
+            case 'p':
+                printf(GRNB "      " RESET);
+                break;
+
+            default:
+                break;
+            }
+    printf("\n\n");
 }
 
 void afficher_joueurs(int nb_joueurs, int nb_tours, struct joueur_s *Joueur)
 {
     int i;
+    char *couleur;
     // Affichage 1ere ligne
     for (i = 0; i < nb_joueurs; i++)
     {
@@ -517,14 +637,30 @@ void afficher_joueurs(int nb_joueurs, int nb_tours, struct joueur_s *Joueur)
     // Affichage 2e ligne
     for (i = 0; i < nb_joueurs; i++)
     {
-        if (i != (nb_tours - 1) % nb_joueurs)
+        switch (i)
         {
-            printf(MAG);
-            printf("Pions en main : %d/6\t", (6 - Joueur[i].pionsPoses));
-            printf(RESET);
+        case 0:
+            couleur = BLK;
+            break;
+        case 1:
+            couleur = GRN;
+            break;
+        case 2:
+            couleur = BLU;
+            break;
+        case 3:
+            couleur = MAG;
+            break;
+        case 4:
+            couleur = CYN;
+            break;
+        default:
+            break;
         }
+        if (i != (nb_tours - 1) % nb_joueurs)
+            printf("%s♟" MAG " : %d/6           \t" RESET, couleur, (6 - Joueur[i].pionsPoses));
         else
-            printf(WHT "Pions en main : %d/6\t" RESET, (6 - Joueur[i].pionsPoses));
+            printf("%s♟" WHT " : %d/6           \t" RESET, couleur, (6 - Joueur[i].pionsPoses));
     }
     printf("\n");
 
@@ -534,11 +670,11 @@ void afficher_joueurs(int nb_joueurs, int nb_tours, struct joueur_s *Joueur)
         if (i != (nb_tours - 1) % nb_joueurs)
         {
             printf(MAG);
-            printf("Points : %3d      \t", Joueur[i].points);
+            printf("🪙%3d                    ", Joueur[i].points);
             printf(RESET);
         }
         else
-            printf(WHT "Points : %3d      \t" RESET, Joueur[i].points);
+            printf(WHT "🪙%3d                    " RESET, Joueur[i].points);
     }
     printf("\n");
 }
@@ -550,6 +686,7 @@ void affichage(struct tuile_s Grille[143][143], struct tuile_s Pile[72], int nb_
 
     system("clear");
     afficher_joueurs(nb_joueurs, nb_tours, Joueur);
+    //afficher_tuile_en_cours(Pile[nb_tours]);
     afficher_tuile_en_cours_couleur(Pile[nb_tours]);
 
     // Trouver les max
@@ -609,7 +746,7 @@ void affichage(struct tuile_s Grille[143][143], struct tuile_s Pile[72], int nb_
     printf("    ");
     for (i = *g - 1; i <= *d + 1; i++)
     {
-        printf("   %3d    ", i);
+        printf("  %3d ", i);
     }
     printf("\n\n");
 }
@@ -626,7 +763,11 @@ void posable(struct tuile_s Grille[143][143], struct tuile_s T, int h, int b, in
             {
                 if (Grille[i - 1][j].posee == 1 || Grille[i][j + 1].posee == 1 || Grille[i + 1][j].posee == 1 || Grille[i][j - 1].posee == 1)
                 {
-                    if ((T.cotes[0] == Grille[i - 1][j].cotes[2] || Grille[i - 1][j].posee == 0) && (T.cotes[1] == Grille[i][j + 1].cotes[3] || Grille[i][j + 1].posee == 0) && (T.cotes[2] == Grille[i + 1][j].cotes[0] || Grille[i + 1][j].posee == 0) && (T.cotes[3] == Grille[i][j - 1].cotes[1] || Grille[i][j - 1].posee == 0))
+                    // on check si c'est posable avec la compatibilité entre ville et blason
+                    if (((T.cotes[0] == Grille[i - 1][j].cotes[2] || Grille[i - 1][j].posee == 0) || ((T.cotes[0] == 'v' || T.cotes[0] == 'b') && (Grille[i - 1][j].cotes[2] == 'v' || Grille[i - 1][j].cotes[2] == 'b' || Grille[i - 1][j].posee == 0))) &&
+                        ((T.cotes[1] == Grille[i][j + 1].cotes[3] || Grille[i][j + 1].posee == 0) || ((T.cotes[1] == 'v' || T.cotes[1] == 'b') && (Grille[i][j + 1].cotes[3] == 'v' || Grille[i][j + 1].cotes[3] == 'b' || Grille[i][j + 1].posee == 0))) &&
+                        ((T.cotes[2] == Grille[i + 1][j].cotes[0] || Grille[i + 1][j].posee == 0) || ((T.cotes[2] == 'v' || T.cotes[2] == 'b') && (Grille[i + 1][j].cotes[0] == 'v' || Grille[i + 1][j].cotes[0] == 'b' || Grille[i + 1][j].posee == 0))) &&
+                        ((T.cotes[3] == Grille[i][j - 1].cotes[1] || Grille[i][j - 1].posee == 0) || ((T.cotes[3] == 'v' || T.cotes[3] == 'b') && (Grille[i][j - 1].cotes[1] == 'v' || Grille[i][j - 1].cotes[1] == 'b' || Grille[i][j - 1].posee == 0))))
                         Grille[i][j].jouable = 'O';
                     else
                         Grille[i][j].jouable = 'X';
@@ -640,7 +781,7 @@ void posable(struct tuile_s Grille[143][143], struct tuile_s T, int h, int b, in
     }
 }
 
-void poser_tuile(struct tuile_s Grille[143][143], struct tuile_s Pile[72], int *nb_tours)
+void poser_tuile(struct tuile_s Grille[143][143], struct tuile_s Pile[72], int *nb_tours, int nb_joueurs, struct joueur_s *Joueur)
 {
     int x, y;
 
@@ -652,7 +793,7 @@ void poser_tuile(struct tuile_s Grille[143][143], struct tuile_s Pile[72], int *
     if (x > 2 * NB_TUILES - 2 || y > 2 * NB_TUILES - 2 || x < 0 || y < 0)
     {
         printf("Coordonnées inexistantes.");
-        poser_tuile(Grille, Pile, nb_tours);
+        interface_joueur(Grille, Pile, nb_tours, nb_joueurs, Joueur);
     }
 
     if (Grille[x][y].jouable == 'O')
@@ -663,7 +804,7 @@ void poser_tuile(struct tuile_s Grille[143][143], struct tuile_s Pile[72], int *
     else
     {
         printf("La tuile n'est pas jouable ici.\n\n");
-        poser_tuile(Grille, Pile, nb_tours);
+        interface_joueur(Grille, Pile, nb_tours, nb_joueurs, Joueur);
     }
 }
 
@@ -676,7 +817,7 @@ void rotation(struct tuile_s *T) // 1 mars
     T->cotes[0] = tmp;
 }
 
-void interface_joueur(struct tuile_s Grille[143][143], struct tuile_s Pile[72], int *nb_tours, int nb_joueurs, struct joueur_s *Joueur, int *h, int *b, int *g, int *d)
+void interface_joueur(struct tuile_s Grille[143][143], struct tuile_s Pile[72], int *nb_tours, int nb_joueurs, struct joueur_s *Joueur)
 {
     int choix;
 
@@ -689,11 +830,11 @@ void interface_joueur(struct tuile_s Grille[143][143], struct tuile_s Pile[72], 
         rotation(&Pile[*nb_tours]);
         break;
     case 2:
-        poser_tuile(Grille, Pile, nb_tours);
+        poser_tuile(Grille, Pile, nb_tours, nb_joueurs, Joueur);
         break;
     default:
-        printf("Commande non reconnue.");
-        interface_joueur(Grille, Pile, nb_tours, nb_joueurs, Joueur, h, b, g, d);
+        printf("Commande non reconnue.\n");
+        break;
     }
 }
 

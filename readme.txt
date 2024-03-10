@@ -1,7 +1,7 @@
-Pour compiler le projet dans le terminal :
+Pour compiler le projet dans un terminal Linux :
 
-(assurez vous que votre terminal est en UTF-8 et adaptez le zoom du terminal à votre guise)
-
-1) Placez-vous dans le répertoire Carcassonne
-2) Utilisez la commande "make"
-3) Exécutez le binaire en tapant "./bin/carcassonne"
+1) Ouvrez un terminal Linux en plein écran (assurez-vous qu'il soit en UTF-8)
+2) Placez-vous dans le répertoire Carcassonne
+3) Utilisez la commande "make" pour compiler le projet
+4) Exécutez le binaire en tapant "./bin/carcassonne"
+5) Adaptez le zoom à votre guise

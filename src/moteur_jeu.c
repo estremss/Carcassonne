@@ -31,7 +31,7 @@ int main(void)
     while (nb_tours < 72)
     {
         affichage(Grille, Pile, nb_tours, nb_joueurs, Joueurs, &h, &b, &g, &d);
-        interface_joueur(Grille, Pile, &nb_tours, nb_joueurs, Joueurs, &h, &b, &g, &d);
+        interface_joueur(Grille, Pile, &nb_tours, nb_joueurs, Joueurs);
     }
     
 
