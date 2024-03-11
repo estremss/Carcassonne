@@ -14,13 +14,16 @@ all: $(EXEC)
 run: $(EXEC)
 	$(BIN)$<
 
-$(EXEC): moteur_jeu.o fct_carcassonne.o
+$(EXEC): moteur_jeu.o fct_carcassonne.o affichage.o
 	$(CC) $(OBJ)* -I $(INC) -o $(BIN)$@
 	
 moteur_jeu.o: $(SRC)moteur_jeu.c
 	$(CC) $(CFLAGS) $< -c -I $(INC) -o $(OBJ)$@
 
 fct_carcassonne.o: $(SRC)fct_carcassonne.c
+	$(CC) $(CFLAGS) $< -c -I $(INC) -o $(OBJ)$@
+
+affichage.o: $(SRC)affichage.c
 	$(CC) $(CFLAGS) $< -c -I $(INC) -o $(OBJ)$@
 
 clean:

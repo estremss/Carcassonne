@@ -1,5 +1,6 @@
 #ifndef FCT_CARCASSONNE
 #define FCT_CARCASSONNE
+#include "game_structures.h"
 
 void parseur_csv(char *, struct tuile_s *);
 
@@ -11,7 +12,7 @@ struct tuile_s depiler(struct tuile_s *, int);
 
 void deplacer_tuile_en_derniere_position(struct tuile_s *, int);
 
-void initialiser_partie(struct tuile_s *, struct tuile_s[143][143], int *, int *);
+void parametre_partie(struct tuile_s *, struct tuile_s[143][143], int *, int *);
 
 void afficher_ligne(struct tuile_s[143][143], int, int, int);
 

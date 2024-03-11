@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include "game_structures.h"
 #include "fct_carcassonne.h"
+#include "affichage.h"
 
 #define NB_TUILES 72
 #define GRN "\e[1;92m"
@@ -24,7 +25,8 @@ int main(void)
 {
     parseur_csv("tuiles_base_simplifiees.csv", Pile);
     affichage_accueil();
-    initialiser_partie(Pile, Grille, &nb_joueurs, &nb_ia);
+    affichage_menu();
+    parametre_partie(Pile, Grille, &nb_joueurs, &nb_ia);
     nb_tours++;
 
     // Boucle de gameplay
