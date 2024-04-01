@@ -1,6 +1,6 @@
 # Projet de Programmation du jeu de société Carcassonne en Langage C Linux)
 
-## Auteurs : Assalas ARAB ; Evan ESTREMS
+### Auteurs : Assalas ARAB ; Evan ESTREMS
 
 Dans le cadre d'un projet de programmation en L2 Informatique, nous avons développé la version C du jeu de société Carcassonne.
 
