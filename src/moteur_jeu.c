@@ -2,6 +2,7 @@
 #include "game_structures.h"
 #include "fct_carcassonne.h"
 #include "affichage.h"
+//#include "raylib.h"
 
 #define NB_TUILES 72
 #define GRN "\e[1;92m"
@@ -23,6 +24,19 @@ struct joueur_s Joueurs[5];
 
 int main(void)
 {
+    /*
+    InitWindow(1920, 1080, "Carcassonne");
+
+    while (!WindowShouldClose())
+    {
+        BeginDrawing();
+        ClearBackground(RAYWHITE);
+        DrawText("Hello World!", 50, 50, 30, BLACK);
+
+        EndDrawing();
+    }
+    CloseWindow();
+    */
     parseur_csv("tuiles_base_simplifiees.csv", Pile);
     affichage_accueil();
     affichage_menu();
@@ -36,6 +50,5 @@ int main(void)
         interface_joueur(Grille, Pile, &nb_tours, nb_joueurs, Joueurs);
     }
     
-
     return 0;
 }

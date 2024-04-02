@@ -7,7 +7,6 @@
 
 #define NB_TUILES 72
 
-
 struct tuile_s depiler(struct tuile_s *Pile, int nb_tours)
 // Cette fonction met la carte du tour courant en "posee = 1"
 {
@@ -88,7 +87,7 @@ void posable(struct tuile_s Grille[143][143], struct tuile_s T, int h, int b, in
 
 void poser_tuile(struct tuile_s Grille[143][143], struct tuile_s Pile[72], int *nb_tours, int nb_joueurs, struct joueur_s *Joueur)
 {
-    int x, y;
+    int x, y, choixPoserPion;
 
     printf("Entrez le numéro de la colonne : ");
     scanf("%d", &y);
@@ -102,8 +101,37 @@ void poser_tuile(struct tuile_s Grille[143][143], struct tuile_s Pile[72], int *
     }
 
     if (Grille[x][y].jouable == 'O')
-    {
+    { // MODIFIER POUR QUE L'utilistaeur NE PUISSE PAS POSER PIONS SUR PRE ET APPLIQUER LE CHANGEMENT DE COULEUR DU PION
         Grille[x][y] = depiler(Pile, *nb_tours);
+        printf("\nVoulez-vous placer un pion sur la tuile ?\n(oui: 1 - non: 0) : ");
+        scanf("%d", &choixPoserPion);
+
+        if (choixPoserPion == 1)
+        {
+            char position;
+            int nettoyeur;
+
+            printf("Choisissez le côté où poser le pion :\n\t-N : en haut\n\t-E : à droite\n\t-S : à gauche\n\t-W : en bas\n\t-C : au centre\n");
+            scanf("%d", &nettoyeur);
+            scanf("%c", &position);
+
+            while ((position == 'N' && Grille[x][y].cotes[0] == 'p') ||
+                   (position == 'S' && Grille[x][y].cotes[2] == 'p') ||
+                   (position == 'E' && Grille[x][y].cotes[1] == 'p') ||
+                   (position == 'W' && Grille[x][y].cotes[3] == 'p') ||
+                   (position == 'C' && Grille[x][y].centre == 'p') ||
+                   (position == 'C' && Grille[x][y].centre == 'V'))
+            {
+                printf("Le pion n'est pas posable sur les Villages et les prés.\n\n");
+                printf("Choisissez le côté où poser le pion :\n\t-N : en haut\n\t-E : à droite\n\t-S : à gauche\n\t-W : en bas\n\t-C : au centre\n");
+                scanf("%d", &nettoyeur);
+                scanf("%c", &position);
+            }
+
+            Grille[x][y].pion.idPion = (*nb_tours - 1) % nb_joueurs;
+            Grille[x][y].pion.positionPion = position;
+            Joueur[(*nb_tours - 1) % nb_joueurs].pionsPoses++;
+        }
         *nb_tours += 1;
     }
     else

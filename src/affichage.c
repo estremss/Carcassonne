@@ -37,7 +37,6 @@
 // Underline
 #define UWHT "\e[4;37m"
 
-
 void afficher_tuile_dbg(struct tuile_s t)
 {
     printf("\t%c\t\n", t.cotes[0]);
@@ -174,56 +173,122 @@ void afficher_tuile_en_cours(struct tuile_s T)
 }
 
 void afficher_ligne_couleur(struct tuile_s Grille[143][143], int l, int g, int d)
-{
+{ // changer couleur en couleur pion
+    char *couleur;
     int i;
     // haut des tuiles
     printf("    |");
     for (i = g; i <= d; i++)
     {
+
+        switch (Grille[l][i].pion.idPion)
+        {
+        case 0:
+            couleur = BLK;
+            break;
+        case 1:
+            couleur = GRN;
+            break;
+        case 2:
+            couleur = BLU;
+            break;
+        case 3:
+            couleur = MAG;
+            break;
+        case 4:
+            couleur = CYN;
+            break;
+        default:
+            break;
+        }
         if (Grille[l][i].posee == 1)
         {
-            switch (Grille[l][i].cotes[0])
+            if (Grille[l][i].pion.positionPion == 'N')
             {
-            case 'r':
-                printf(GRNB "  " YELB "  " GRNB "  " RESET);
-                break;
+                switch (Grille[l][i].cotes[0])
+                {
+                case 'r':
+                    printf(GRNB "  " YELB "%s♟ " GRNB "  " RESET, couleur);
+                    break;
 
-            case 'v':
-                if (Grille[l][i].cotes[3] == 'v' && Grille[l][i].centre == 'v')
+                case 'v':
+                    if (Grille[l][i].cotes[3] == 'v' && Grille[l][i].centre == 'v')
+                        printf(REDB "  " RESET);
+                    else
+                        printf(GRNB "  " RESET);
+
+                    printf(REDB "%s♟ " RESET, couleur);
+
+                    if (Grille[l][i].cotes[1] == 'v' && Grille[l][i].centre == 'v')
+                        printf(REDB "  " RESET);
+
+                    else
+                        printf(GRNB "  " RESET);
+
+                    break;
+                case 'b':
+                    if (Grille[l][i].cotes[3] == 'b' && Grille[l][i].centre == 'b')
+                        printf(REDB "  " RESET);
+                    else
+                        printf(GRNB "  " RESET);
+
+                    printf(REDB "%s♟ " RESET, couleur);
+
+                    if (Grille[l][i].cotes[1] == 'b' && Grille[l][i].centre == 'b')
+                        printf(REDB "  " RESET);
+
+                    else
+                        printf(GRNB "  " RESET);
+                    break;
+                default:
+                    break;
+                }
+            }
+            else
+            {
+                switch (Grille[l][i].cotes[0])
+                {
+                case 'r':
+                    printf(GRNB "  " YELB "  " GRNB "  " RESET);
+                    break;
+
+                case 'v':
+                    if (Grille[l][i].cotes[3] == 'v' && Grille[l][i].centre == 'v')
+                        printf(REDB "  " RESET);
+                    else
+                        printf(GRNB "  " RESET);
+
                     printf(REDB "  " RESET);
-                else
-                    printf(GRNB "  " RESET);
 
-                printf(REDB "  " RESET);
+                    if (Grille[l][i].cotes[1] == 'v' && Grille[l][i].centre == 'v')
+                        printf(REDB "  " RESET);
 
-                if (Grille[l][i].cotes[1] == 'v' && Grille[l][i].centre == 'v')
+                    else
+                        printf(GRNB "  " RESET);
+
+                    break;
+                case 'b':
+                    if (Grille[l][i].cotes[3] == 'b' && Grille[l][i].centre == 'b')
+                        printf(REDB "  " RESET);
+                    else
+                        printf(GRNB "  " RESET);
+
                     printf(REDB "  " RESET);
 
-                else
-                    printf(GRNB "  " RESET);
+                    if (Grille[l][i].cotes[1] == 'b' && Grille[l][i].centre == 'b')
+                        printf(REDB "  " RESET);
 
-                break;
-            case 'b':
-                if (Grille[l][i].cotes[3] == 'b' && Grille[l][i].centre == 'b')
-                    printf(REDB "  " RESET);
-                else
-                    printf(GRNB "  " RESET);
+                    else
+                        printf(GRNB "  " RESET);
+                    break;
 
-                printf(REDB "  " RESET);
+                case 'p':
+                    printf(GRNB "      " RESET);
+                    break;
 
-                if (Grille[l][i].cotes[1] == 'b' && Grille[l][i].centre == 'b')
-                    printf(REDB "  " RESET);
-
-                else
-                    printf(GRNB "  " RESET);
-                break;
-
-            case 'p':
-                printf(GRNB "      " RESET);
-                break;
-
-            default:
-                break;
+                default:
+                    break;
+                }
             }
         }
         else
@@ -243,81 +308,171 @@ void afficher_ligne_couleur(struct tuile_s Grille[143][143], int l, int g, int d
     // tuiles du milieu
     for (i = g; i <= d; i++)
     {
-        if (Grille[l][i].posee == 1)
+        switch (Grille[l][i].pion.idPion)
         {
-            // Grille[l][i].cotes[3]
-            switch (Grille[l][i].cotes[3])
+        case 0:
+            couleur = BLK;
+            break;
+        case 1:
+            couleur = GRN;
+            break;
+        case 2:
+            couleur = BLU;
+            break;
+        case 3:
+            couleur = MAG;
+            break;
+        case 4:
+            couleur = CYN;
+            break;
+        default:
+            break;
+        }
+        if (Grille[l][i].posee == 1)
+        // Grille[l][i].cotes[3]
+        {
+            if (Grille[l][i].pion.positionPion == 'W')
             {
-            case 'r':
-                printf(YELB "  " RESET);
-                break;
+                switch (Grille[l][i].cotes[3])
+                {
+                case 'r':
+                    printf(YELB "%s♟ " RESET, couleur);
+                    break;
+                case 'v':
+                    printf(REDB "%s♟ " RESET, couleur);
+                    break;
 
-            case 'p':
-                printf(GRNB "  " RESET);
-                break;
+                case 'b':
+                    printf(REDB "%s♟ " RESET, couleur);
+                    break;
 
-            case 'v':
-                printf(REDB "  " RESET);
-                break;
+                default:
+                    break;
+                }
+            }
+            else
+            {
+                switch (Grille[l][i].cotes[3])
+                {
+                case 'r':
+                    printf(YELB "  " RESET);
+                    break;
 
-            case 'b':
-                printf(REDB "  " RESET);
-                break;
+                case 'p':
+                    printf(GRNB "  " RESET);
+                    break;
 
-            default:
-                break;
+                case 'v':
+                    printf(REDB "  " RESET);
+                    break;
+
+                case 'b':
+                    printf(REDB "  " RESET);
+                    break;
+
+                default:
+                    break;
+                }
             }
             // Grille[l][i].centre
-            switch (Grille[l][i].centre)
+            if (Grille[l][i].pion.positionPion == 'C')
             {
-            case 'r':
-                printf(YELB "  " RESET);
-                break;
+                switch (Grille[l][i].centre)
+                {
+                case 'r':
+                    printf(YELB "%s♟ " RESET, couleur);
+                    break;
+                case 'v':
+                    if ((Grille[l][i].cotes[0] == 'v' && Grille[l][i].cotes[2] == 'v') || (Grille[l][i].cotes[1] == 'v' && Grille[l][i].cotes[3] == 'v'))
+                        printf(REDB "%s♟ " RESET, couleur);
+                    else
+                        printf(GRNB "%s♟ " RESET, couleur);
+                    break;
+                case 'b':
+                    if ((Grille[l][i].cotes[0] == 'b' && Grille[l][i].cotes[2] == 'b') || (Grille[l][i].cotes[1] == 'b' && Grille[l][i].cotes[3] == 'b'))
+                        printf(REDB WHT "🛡" RESET "%s♟" RESET, couleur);
+                    else
+                        printf(GRNB "%s♟ " RESET, couleur);
+                    break;
+                case 'a':
+                    printf(WHTB "%s♟ " RESET, couleur);
+                    break;
 
-            case 'p':
-                printf(GRNB "  " RESET);
-                break;
+                default:
+                    break;
+                }
+            }
+            else
+            {
+                switch (Grille[l][i].centre)
+                {
+                case 'r':
+                    printf(YELB "  " RESET);
+                    break;
 
-            case 'v':
-                if ((Grille[l][i].cotes[0] == 'v' && Grille[l][i].cotes[2] == 'v') || (Grille[l][i].cotes[1] == 'v' && Grille[l][i].cotes[3] == 'v'))
-                    printf(REDB "  " RESET);
-                else
+                case 'p':
                     printf(GRNB "  " RESET);
-                break;
-            case 'b':
-                if ((Grille[l][i].cotes[0] == 'b' && Grille[l][i].cotes[2] == 'b') || (Grille[l][i].cotes[1] == 'b' && Grille[l][i].cotes[3] == 'b'))
-                    printf(REDB WHT "🛡 " RESET);
-                else
-                    printf(GRNB "  " RESET);
-                break;
-            case 'V':
-                printf(BLKHB "  " RESET);
-                break;
-            case 'a':
-                printf(WHTB "  " RESET);
-                break;
+                    break;
 
-            default:
-                break;
+                case 'v':
+                    if ((Grille[l][i].cotes[0] == 'v' && Grille[l][i].cotes[2] == 'v') || (Grille[l][i].cotes[1] == 'v' && Grille[l][i].cotes[3] == 'v'))
+                        printf(REDB "  " RESET);
+                    else
+                        printf(GRNB "  " RESET);
+                    break;
+                case 'b':
+                    if ((Grille[l][i].cotes[0] == 'b' && Grille[l][i].cotes[2] == 'b') || (Grille[l][i].cotes[1] == 'b' && Grille[l][i].cotes[3] == 'b'))
+                        printf(REDB WHT "🛡" RESET);
+                    else
+                        printf(GRNB "  " RESET);
+                    break;
+                case 'V':
+                    printf(BLKHB "  " RESET);
+                    break;
+                case 'a':
+                    printf(WHTB "  " RESET);
+                    break;
+
+                default:
+                    break;
+                }
             }
             // Grille[l][i].cotes[1]
-            switch (Grille[l][i].cotes[1])
+            if (Grille[l][i].pion.positionPion == 'E')
             {
-            case 'r':
-                printf(YELB "  " RESET);
-                break;
+                switch (Grille[l][i].cotes[1])
+                {
+                case 'r':
+                    printf(YELB "%s♟ " RESET, couleur);
+                    break;
+                case 'v':
+                case 'b':
+                    printf(REDB "%s♟ " RESET, couleur);
+                    break;
+                default:
+                    break;
+                }
+            }
+            else
+            {
+                switch (Grille[l][i].cotes[1])
+                {
+                case 'r':
+                    printf(YELB "  " RESET);
+                    break;
 
-            case 'p':
-                printf(GRNB "  " RESET);
-                break;
+                case 'p':
+                    printf(GRNB "  " RESET);
+                    break;
 
-            case 'v':
-            case 'b':
-                printf(REDB "  " RESET);
-                break;
+                case 'v':
+                case 'b':
+                    printf(REDB "  " RESET);
+                    break;
 
-            default:
-                break;
+                default:
+                    break;
+                }
             }
         }
         else
@@ -337,48 +492,110 @@ void afficher_ligne_couleur(struct tuile_s Grille[143][143], int l, int g, int d
     // T.cotes[2]
     for (i = g; i <= d; i++)
     {
+        switch (Grille[l][i].pion.idPion)
+        {
+        case 0:
+            couleur = BLK;
+            break;
+        case 1:
+            couleur = GRN;
+            break;
+        case 2:
+            couleur = BLU;
+            break;
+        case 3:
+            couleur = MAG;
+            break;
+        case 4:
+            couleur = CYN;
+            break;
+        default:
+            break;
+        }
         if (Grille[l][i].posee == 1)
         {
-            switch (Grille[l][i].cotes[2])
+            if (Grille[l][i].pion.positionPion == 'S')
             {
-            case 'r':
-                printf(GRNB "  " YELB "  " GRNB "  " RESET);
-                break;
+                switch (Grille[l][i].cotes[2])
+                {
+                case 'r':
+                    printf(GRNB "  " YELB "%s♟ " GRNB "  " RESET, couleur);
+                    break;
 
-            case 'v':
-                if (Grille[l][i].cotes[3] == 'v' && Grille[l][i].centre == 'v')
+                case 'v':
+                    if (Grille[l][i].cotes[3] == 'v' && Grille[l][i].centre == 'v')
+                        printf(REDB "  " RESET);
+                    else
+                        printf(GRNB "  " RESET);
+
+                    printf(REDB "%s♟ " RESET, couleur);
+
+                    if (Grille[l][i].cotes[1] == 'v' && Grille[l][i].centre == 'v')
+                        printf(REDB "  " RESET);
+                    else
+                        printf(GRNB "  " RESET);
+                    break;
+
+                case 'b':
+                    if (Grille[l][i].cotes[3] == 'b' && Grille[l][i].centre == 'b')
+                        printf(REDB "  " RESET);
+                    else
+                        printf(GRNB "  " RESET);
+
+                    printf(REDB "%s♟ " RESET, couleur);
+
+                    if (Grille[l][i].cotes[1] == 'b' && Grille[l][i].centre == 'b')
+                        printf(REDB "  " RESET);
+                    else
+                        printf(GRNB "  " RESET);
+                    break;
+                default:
+                    break;
+                }
+            }
+            else
+            {
+                switch (Grille[l][i].cotes[2])
+                {
+                case 'r':
+                    printf(GRNB "  " YELB "  " GRNB "  " RESET);
+                    break;
+
+                case 'v':
+                    if (Grille[l][i].cotes[3] == 'v' && Grille[l][i].centre == 'v')
+                        printf(REDB "  " RESET);
+                    else
+                        printf(GRNB "  " RESET);
+
                     printf(REDB "  " RESET);
-                else
-                    printf(GRNB "  " RESET);
 
-                printf(REDB "  " RESET);
+                    if (Grille[l][i].cotes[1] == 'v' && Grille[l][i].centre == 'v')
+                        printf(REDB "  " RESET);
+                    else
+                        printf(GRNB "  " RESET);
+                    break;
 
-                if (Grille[l][i].cotes[1] == 'v' && Grille[l][i].centre == 'v')
+                case 'b':
+                    if (Grille[l][i].cotes[3] == 'b' && Grille[l][i].centre == 'b')
+                        printf(REDB "  " RESET);
+                    else
+                        printf(GRNB "  " RESET);
+
                     printf(REDB "  " RESET);
-                else
-                    printf(GRNB "  " RESET);
-                break;
 
-            case 'b':
-                if (Grille[l][i].cotes[3] == 'b' && Grille[l][i].centre == 'b')
-                    printf(REDB "  " RESET);
-                else
-                    printf(GRNB "  " RESET);
+                    if (Grille[l][i].cotes[1] == 'b' && Grille[l][i].centre == 'b')
+                        printf(REDB "  " RESET);
+                    else
+                        printf(GRNB "  " RESET);
+                    break;
 
-                printf(REDB "  " RESET);
+                case 'p':
+                    printf(GRNB "      " RESET);
+                    break;
 
-                if (Grille[l][i].cotes[1] == 'b' && Grille[l][i].centre == 'b')
-                    printf(REDB "  " RESET);
-                else
-                    printf(GRNB "  " RESET);
-                break;
-
-            case 'p':
-                printf(GRNB "      " RESET);
-                break;
-
-            default:
-                break;
+                default:
+                    break;
+                }
             }
         }
         else
@@ -525,46 +742,46 @@ void afficher_tuile_en_cours_couleur(struct tuile_s T)
     printf("\n\t");
     // T.cotes[2]
     switch (T.cotes[2])
-            {
-            case 'r':
-                printf(GRNB "  " YELB "  " GRNB "  " RESET);
-                break;
+    {
+    case 'r':
+        printf(GRNB "  " YELB "  " GRNB "  " RESET);
+        break;
 
-            case 'v':
-                if (T.cotes[3] == 'v' && T.centre == 'v')
-                    printf(REDB "  " RESET);
-                else
-                    printf(GRNB "  " RESET);
+    case 'v':
+        if (T.cotes[3] == 'v' && T.centre == 'v')
+            printf(REDB "  " RESET);
+        else
+            printf(GRNB "  " RESET);
 
-                printf(REDB "  " RESET);
+        printf(REDB "  " RESET);
 
-                if (T.cotes[1] == 'v' && T.centre == 'v')
-                    printf(REDB "  " RESET);
-                else
-                    printf(GRNB "  " RESET);
-                break;
+        if (T.cotes[1] == 'v' && T.centre == 'v')
+            printf(REDB "  " RESET);
+        else
+            printf(GRNB "  " RESET);
+        break;
 
-            case 'b':
-                if (T.cotes[3] == 'b' && T.centre == 'b')
-                    printf(REDB "  " RESET);
-                else
-                    printf(GRNB "  " RESET);
+    case 'b':
+        if (T.cotes[3] == 'b' && T.centre == 'b')
+            printf(REDB "  " RESET);
+        else
+            printf(GRNB "  " RESET);
 
-                printf(REDB "  " RESET);
+        printf(REDB "  " RESET);
 
-                if (T.cotes[1] == 'b' && T.centre == 'b')
-                    printf(REDB "  " RESET);
-                else
-                    printf(GRNB "  " RESET);
-                break;
+        if (T.cotes[1] == 'b' && T.centre == 'b')
+            printf(REDB "  " RESET);
+        else
+            printf(GRNB "  " RESET);
+        break;
 
-            case 'p':
-                printf(GRNB "      " RESET);
-                break;
+    case 'p':
+        printf(GRNB "      " RESET);
+        break;
 
-            default:
-                break;
-            }
+    default:
+        break;
+    }
     printf("\n\n");
 }
 
@@ -638,7 +855,7 @@ void affichage(struct tuile_s Grille[143][143], struct tuile_s Pile[72], int nb_
 
     system("clear");
     afficher_joueurs(nb_joueurs, nb_tours, Joueur);
-    //afficher_tuile_en_cours(Pile[nb_tours]);
+    // afficher_tuile_en_cours(Pile[nb_tours]);
     afficher_tuile_en_cours_couleur(Pile[nb_tours]);
 
     // Trouver les max
