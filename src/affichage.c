@@ -228,14 +228,20 @@ void afficher_ligne_couleur(struct tuile_s Grille[143][143], int l, int g, int d
                     break;
                 case 'b':
                     if (Grille[l][i].cotes[3] == 'b' && Grille[l][i].centre == 'b')
-                        printf(REDB "  " RESET);
+                        if (Grille[l][i].cotes[1] != 'b' && Grille[l][i].cotes[2] != 'b')
+                            printf(REDB "🛡 " RESET);
+                        else
+                            printf(REDB "  " RESET);
                     else
                         printf(GRNB "  " RESET);
 
                     printf(REDB "%s♟ " RESET, couleur);
 
                     if (Grille[l][i].cotes[1] == 'b' && Grille[l][i].centre == 'b')
-                        printf(REDB "  " RESET);
+                        if (Grille[l][i].cotes[3] != 'b' && Grille[l][i].cotes[2] != 'b')
+                            printf(REDB "🛡 " RESET);
+                        else
+                            printf(REDB "  " RESET);
 
                     else
                         printf(GRNB "  " RESET);
@@ -269,14 +275,20 @@ void afficher_ligne_couleur(struct tuile_s Grille[143][143], int l, int g, int d
                     break;
                 case 'b':
                     if (Grille[l][i].cotes[3] == 'b' && Grille[l][i].centre == 'b')
-                        printf(REDB "  " RESET);
+                        if (Grille[l][i].cotes[1] != 'b' && Grille[l][i].cotes[2] != 'b')
+                            printf(REDB "🛡 " RESET);
+                        else
+                            printf(REDB "  " RESET);
                     else
                         printf(GRNB "  " RESET);
 
                     printf(REDB "  " RESET);
 
                     if (Grille[l][i].cotes[1] == 'b' && Grille[l][i].centre == 'b')
-                        printf(REDB "  " RESET);
+                        if (Grille[l][i].cotes[3] != 'b' && Grille[l][i].cotes[2] != 'b')
+                            printf(REDB "🛡 " RESET);
+                        else
+                            printf(REDB "  " RESET);
 
                     else
                         printf(GRNB "  " RESET);
@@ -390,7 +402,7 @@ void afficher_ligne_couleur(struct tuile_s Grille[143][143], int l, int g, int d
                     break;
                 case 'b':
                     if ((Grille[l][i].cotes[0] == 'b' && Grille[l][i].cotes[2] == 'b') || (Grille[l][i].cotes[1] == 'b' && Grille[l][i].cotes[3] == 'b'))
-                        printf(REDB WHT "🛡" RESET "%s♟" RESET, couleur);
+                        printf(REDB WHT "🛡 " RESET "%s♟" RESET, couleur);
                     else
                         printf(GRNB "%s♟ " RESET, couleur);
                     break;
@@ -422,7 +434,7 @@ void afficher_ligne_couleur(struct tuile_s Grille[143][143], int l, int g, int d
                     break;
                 case 'b':
                     if ((Grille[l][i].cotes[0] == 'b' && Grille[l][i].cotes[2] == 'b') || (Grille[l][i].cotes[1] == 'b' && Grille[l][i].cotes[3] == 'b'))
-                        printf(REDB WHT "🛡" RESET);
+                        printf(REDB WHT "🛡 " RESET);
                     else
                         printf(GRNB "  " RESET);
                     break;
@@ -489,7 +501,7 @@ void afficher_ligne_couleur(struct tuile_s Grille[143][143], int l, int g, int d
     }
     printf("| %d\n", l);
     printf("    |");
-    // T.cotes[2]
+    // Grille[l][i].cotes[2]
     for (i = g; i <= d; i++)
     {
         switch (Grille[l][i].pion.idPion)
@@ -538,14 +550,21 @@ void afficher_ligne_couleur(struct tuile_s Grille[143][143], int l, int g, int d
 
                 case 'b':
                     if (Grille[l][i].cotes[3] == 'b' && Grille[l][i].centre == 'b')
-                        printf(REDB "  " RESET);
+                        if (Grille[l][i].cotes[0] != 'b' && Grille[l][i].cotes[1] != 'b')
+                            printf(REDB "🛡 " RESET);
+                        else
+                            printf(REDB "  " RESET);
                     else
                         printf(GRNB "  " RESET);
 
                     printf(REDB "%s♟ " RESET, couleur);
 
                     if (Grille[l][i].cotes[1] == 'b' && Grille[l][i].centre == 'b')
-                        printf(REDB "  " RESET);
+                        if (Grille[l][i].cotes[0] != 'b' && Grille[l][i].cotes[3] != 'b')
+                            printf(REDB "🛡 " RESET);
+                        else
+                            printf(REDB "  " RESET);
+
                     else
                         printf(GRNB "  " RESET);
                     break;
@@ -577,14 +596,21 @@ void afficher_ligne_couleur(struct tuile_s Grille[143][143], int l, int g, int d
 
                 case 'b':
                     if (Grille[l][i].cotes[3] == 'b' && Grille[l][i].centre == 'b')
-                        printf(REDB "  " RESET);
+                        if (Grille[l][i].cotes[0] != 'b' && Grille[l][i].cotes[1] != 'b')
+                            printf(REDB "🛡 " RESET);
+                        else
+                            printf(REDB "  " RESET);
                     else
                         printf(GRNB "  " RESET);
 
                     printf(REDB "  " RESET);
 
                     if (Grille[l][i].cotes[1] == 'b' && Grille[l][i].centre == 'b')
-                        printf(REDB "  " RESET);
+                        if (Grille[l][i].cotes[0] != 'b' && Grille[l][i].cotes[3] != 'b')
+                            printf(REDB "🛡 " RESET);
+                        else
+                            printf(REDB "  " RESET);
+
                     else
                         printf(GRNB "  " RESET);
                     break;
@@ -644,14 +670,20 @@ void afficher_tuile_en_cours_couleur(struct tuile_s T)
         break;
     case 'b':
         if (T.cotes[3] == 'b' && T.centre == 'b')
-            printf(REDB "  " RESET);
+            if (T.cotes[1] != 'b' && T.cotes[2] != 'b')
+                printf(REDB "🛡 " RESET);
+            else
+                printf(REDB "  " RESET);
         else
             printf(GRNB "  " RESET);
 
         printf(REDB "  " RESET);
 
         if (T.cotes[1] == 'b' && T.centre == 'b')
-            printf(REDB "  " RESET);
+            if (T.cotes[3] != 'b' && T.cotes[2] != 'b')
+                printf(REDB "🛡 " RESET);
+            else
+                printf(REDB "  " RESET);
 
         else
             printf(GRNB "  " RESET);
@@ -763,14 +795,21 @@ void afficher_tuile_en_cours_couleur(struct tuile_s T)
 
     case 'b':
         if (T.cotes[3] == 'b' && T.centre == 'b')
-            printf(REDB "  " RESET);
+            if (T.cotes[0] != 'b' && T.cotes[1] != 'b')
+                printf(REDB "🛡 " RESET);
+            else
+                printf(REDB "  " RESET);
         else
             printf(GRNB "  " RESET);
 
         printf(REDB "  " RESET);
 
         if (T.cotes[1] == 'b' && T.centre == 'b')
-            printf(REDB "  " RESET);
+            if (T.cotes[0] != 'b' && T.cotes[3] != 'b')
+                printf(REDB "🛡 " RESET);
+            else
+                printf(REDB "  " RESET);
+
         else
             printf(GRNB "  " RESET);
         break;
@@ -855,7 +894,7 @@ void affichage(struct tuile_s Grille[143][143], struct tuile_s Pile[72], int nb_
 
     system("clear");
     afficher_joueurs(nb_joueurs, nb_tours, Joueur);
-    // afficher_tuile_en_cours(Pile[nb_tours]);
+    afficher_tuile_en_cours(Pile[nb_tours]);
     afficher_tuile_en_cours_couleur(Pile[nb_tours]);
 
     // Trouver les max

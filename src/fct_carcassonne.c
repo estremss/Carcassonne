@@ -51,6 +51,11 @@ void parametre_partie(struct tuile_s *Pile, struct tuile_s Grille[143][143], int
     printf("\n\n\tNombre d'IA : ");
     scanf("%d", nb_ia);
     printf("\n");
+    if (*nb_joueurs + *nb_ia < 2 || *nb_joueurs + *nb_ia > 5)
+    {
+        printf("\tLe nombre de joueurs doit être compris entre 2 et 5.\n");
+        parametre_partie(Pile, Grille, nb_joueurs, nb_ia);
+    }
     Grille[NB_TUILES][NB_TUILES] = depiler(Pile, 0);
     melange(Pile);
 }
@@ -87,7 +92,7 @@ void posable(struct tuile_s Grille[143][143], struct tuile_s T, int h, int b, in
 
 void poser_tuile(struct tuile_s Grille[143][143], struct tuile_s Pile[72], int *nb_tours, int nb_joueurs, struct joueur_s *Joueur)
 {
-    int x, y, choixPoserPion;
+    int x, y;
 
     printf("Entrez le numéro de la colonne : ");
     scanf("%d", &y);
@@ -103,41 +108,104 @@ void poser_tuile(struct tuile_s Grille[143][143], struct tuile_s Pile[72], int *
     if (Grille[x][y].jouable == 'O')
     { // MODIFIER POUR QUE L'utilistaeur NE PUISSE PAS POSER PIONS SUR PRE ET APPLIQUER LE CHANGEMENT DE COULEUR DU PION
         Grille[x][y] = depiler(Pile, *nb_tours);
-        printf("\nVoulez-vous placer un pion sur la tuile ?\n(oui: 1 - non: 0) : ");
-        scanf("%d", &choixPoserPion);
-
-        if (choixPoserPion == 1)
-        {
-            char position;
-            int nettoyeur;
-
-            printf("Choisissez le côté où poser le pion :\n\t-N : en haut\n\t-E : à droite\n\t-S : à gauche\n\t-W : en bas\n\t-C : au centre\n");
-            scanf("%d", &nettoyeur);
-            scanf("%c", &position);
-
-            while ((position == 'N' && Grille[x][y].cotes[0] == 'p') ||
-                   (position == 'S' && Grille[x][y].cotes[2] == 'p') ||
-                   (position == 'E' && Grille[x][y].cotes[1] == 'p') ||
-                   (position == 'W' && Grille[x][y].cotes[3] == 'p') ||
-                   (position == 'C' && Grille[x][y].centre == 'p') ||
-                   (position == 'C' && Grille[x][y].centre == 'V'))
-            {
-                printf("Le pion n'est pas posable sur les Villages et les prés.\n\n");
-                printf("Choisissez le côté où poser le pion :\n\t-N : en haut\n\t-E : à droite\n\t-S : à gauche\n\t-W : en bas\n\t-C : au centre\n");
-                scanf("%d", &nettoyeur);
-                scanf("%c", &position);
-            }
-
-            Grille[x][y].pion.idPion = (*nb_tours - 1) % nb_joueurs;
-            Grille[x][y].pion.positionPion = position;
-            Joueur[(*nb_tours - 1) % nb_joueurs].pionsPoses++;
-        }
+        poser_pion(Grille, Joueur, *nb_tours, nb_joueurs, x, y);
         *nb_tours += 1;
     }
     else
     {
         printf("La tuile n'est pas jouable ici.\n\n");
         interface_joueur(Grille, Pile, nb_tours, nb_joueurs, Joueur);
+    }
+}
+void poser_pion(struct tuile_s Grille[143][143], struct joueur_s *Joueur, int nb_tours, int nb_joueurs, int x, int y)
+{
+    int choixPoserPion;
+
+    printf("\nVoulez-vous placer un pion sur la tuile ?\n(oui: 1 - non: 0) : ");
+    scanf("%d", &choixPoserPion);
+
+    if (choixPoserPion == 1)
+    {
+        char position;
+        int nettoyeur;
+
+        printf("Choisissez le côté où poser le pion :\n\t-N : en haut\n\t-E : à droite\n\t-S : à gauche\n\t-W : en bas\n\t-C : au centre\n");
+        scanf("%d", &nettoyeur);
+        scanf("%c", &position);
+
+        while ((position == 'N' && Grille[x][y].cotes[0] == 'p') ||
+               (position == 'S' && Grille[x][y].cotes[2] == 'p') ||
+               (position == 'E' && Grille[x][y].cotes[1] == 'p') ||
+               (position == 'W' && Grille[x][y].cotes[3] == 'p') ||
+               (position == 'C' && Grille[x][y].centre == 'p') ||
+               (position == 'C' && Grille[x][y].centre == 'V') ||
+               (position != 'N' && position != 'S' && position != 'E' && position != 'W' && position != 'C'))
+        {
+            printf("Le pion n'est pas posable sur les Villages et les prés.\nVotre entrée n'est pas valide.\n\n");
+            printf("Choisissez le côté où poser le pion :\n\t-N : en haut\n\t-E : à droite\n\t-S : à gauche\n\t-W : en bas\n\t-C : au centre\n");
+            scanf("%d", &nettoyeur);
+            scanf("%c", &position);
+        }
+
+        Grille[x][y].pion.idPion = (nb_tours - 1) % nb_joueurs;
+        Grille[x][y].pion.positionPion = position;
+        Joueur[(nb_tours - 1) % nb_joueurs].pionsPoses++;
+    }
+}
+
+int verif_route(struct tuile_s Grille[143][143], int x, int y, int papa, int etat)
+{
+    if (etat == 0)
+    {
+
+        // Conditions d'arrêt 1
+        if (Grille[x][y].pion.positionPion != NULL)
+        {
+
+            if (Grille[x][y].pion.positionPion <= 3 && Grille[x][y].cotes[Grille[x][y].pion.positionPion] == 'r')
+            {
+                etat = 1;
+                return -1;
+            }
+            else
+            {
+                if ((Grille[x][y].centre == 'r'))
+                {
+                    etat = 1;
+                    return -1;
+                }
+            }
+        }
+        // Condition d'arrêt 2
+        else if (Grille[x][y].centre != 'r')
+        {
+            return 0;
+        }
+
+        // Traitement
+        else
+        {
+            if (Grille[x][y].cotes[0] == 'r' && papa != 2)
+            {
+                papa = 0;
+                verif_route(Grille, x - 1, y, papa, etat);
+            }
+            if (Grille[x][y].cotes[1] == 'r' && papa != 3)
+            {
+                papa = 1;
+                verif_route(Grille, x, y + 1, papa, etat);
+            }
+            if (Grille[x][y].cotes[2] == 'r' && papa != 0)
+            {
+                papa = 2;
+                verif_route(Grille, x + 1, y, papa, etat);
+            }
+            if (Grille[x][y].cotes[3] == 'r' && papa != 1)
+            {
+                papa = 3;
+                verif_route(Grille, x, y - 1, papa, etat);
+            }
+        }
     }
 }
 

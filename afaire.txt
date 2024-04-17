@@ -1,0 +1,9 @@
+affichage pion par dessus blason :
+    en vrai c'est quand même jouable
+
+empecher utilisateur de poser pion au centre sur une tuile coin :
+    c'est vraiment un cas spécifique où l'utilisateur est con
+
+commencer verif_route:
+
+vérifier que le cas si on ne peut pas poser de tuile est bien géré
