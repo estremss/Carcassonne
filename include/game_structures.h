@@ -4,7 +4,7 @@
 struct pion_s
 {
     int idPion;        // -1 si appartient à personne, id joueur sinon
-    char positionPion; // position du pion sur la tuile : {N, S, E, W} ou NULL
+    int positionPion; // position du pion sur la tuile : {0, 1, 2, 3, 4} ou NULL
 };
 
 struct tuile_s

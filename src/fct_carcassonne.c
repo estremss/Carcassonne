@@ -126,25 +126,25 @@ void poser_pion(struct tuile_s Grille[143][143], struct joueur_s *Joueur, int nb
 
     if (choixPoserPion == 1)
     {
-        char position;
+        int  position;
         int nettoyeur;
 
-        printf("Choisissez le côté où poser le pion :\n\t-N : en haut\n\t-E : à droite\n\t-S : à gauche\n\t-W : en bas\n\t-C : au centre\n");
+        printf("Choisissez le côté où poser le pion :\n\t-0 : en haut\n\t-1 : à droite\n\t-2 : en bas \n\t-3 : a gauche \n\t-4 : au centre\n");
         scanf("%d", &nettoyeur);
-        scanf("%c", &position);
+        scanf("%d", &position);
 
-        while ((position == 'N' && Grille[x][y].cotes[0] == 'p') ||
-               (position == 'S' && Grille[x][y].cotes[2] == 'p') ||
-               (position == 'E' && Grille[x][y].cotes[1] == 'p') ||
-               (position == 'W' && Grille[x][y].cotes[3] == 'p') ||
-               (position == 'C' && Grille[x][y].centre == 'p') ||
-               (position == 'C' && Grille[x][y].centre == 'V') ||
-               (position != 'N' && position != 'S' && position != 'E' && position != 'W' && position != 'C'))
+        while ((position == 0 && Grille[x][y].cotes[0] == 'p') ||
+               (position == 2 && Grille[x][y].cotes[2] == 'p') ||
+               (position == 1 && Grille[x][y].cotes[1] == 'p') ||
+               (position == 3 && Grille[x][y].cotes[3] == 'p') ||
+               (position == 4 && Grille[x][y].centre == 'p') ||
+               (position == 4 && Grille[x][y].centre == 'V') ||
+               (position != 0 && position != 2 && position != 1 && position != 3 && position != 4))
         {
             printf("Le pion n'est pas posable sur les Villages et les prés.\nVotre entrée n'est pas valide.\n\n");
             printf("Choisissez le côté où poser le pion :\n\t-N : en haut\n\t-E : à droite\n\t-S : à gauche\n\t-W : en bas\n\t-C : au centre\n");
             scanf("%d", &nettoyeur);
-            scanf("%c", &position);
+            scanf("%d", &position);
         }
 
         Grille[x][y].pion.idPion = (nb_tours - 1) % nb_joueurs;
@@ -159,7 +159,7 @@ int verif_route(struct tuile_s Grille[143][143], int x, int y, int papa, int eta
     {
 
         // Conditions d'arrêt 1
-        if (Grille[x][y].pion.positionPion != NULL)
+        if (Grille[x][y].pion.idPion != 0)
         {
 
             if (Grille[x][y].pion.positionPion <= 3 && Grille[x][y].cotes[Grille[x][y].pion.positionPion] == 'r')
@@ -207,6 +207,7 @@ int verif_route(struct tuile_s Grille[143][143], int x, int y, int papa, int eta
             }
         }
     }
+    return 0;
 }
 
 void rotation(struct tuile_s *T) // 1 mars
