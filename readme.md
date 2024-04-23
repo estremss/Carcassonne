@@ -2,7 +2,7 @@
 
 ### Auteurs : Assalas ARAB ; Evan ESTREMS
 
-*!! Les push sur le projet ne sont pas représentatifs de l'implication dans le projet. Le projet a été développé dans son intégralité en Pair Programming sur un ordinateur commun. !!*
+:warning: *Les push sur le projet ne sont pas représentatifs de l'implication dans le projet. Le projet a été développé dans son intégralité en Pair Programming sur un ordinateur commun.* :warning:
 
 Dans le cadre d'un projet de programmation en L2 Informatique, nous avons développé la version C du jeu de société Carcassonne.
 
