@@ -38,6 +38,6 @@ void afficher_joueurs(int, int, struct joueur_s *);
 
 void poser_pion(struct tuile_s[143][143], struct joueur_s *, int, int, int, int);
 
-int verif_route(struct tuile_s[143][143], int, int, int, int);
+int verif_route(struct tuile_s[143][143], int, int, int, int, int);
 
 #endif // FCT_CARCASSONNE

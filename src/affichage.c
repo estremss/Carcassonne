@@ -203,7 +203,7 @@ void afficher_ligne_couleur(struct tuile_s Grille[143][143], int l, int g, int d
         }
         if (Grille[l][i].posee == 1)
         {
-            if (Grille[l][i].pion.positionPion == 'N')
+            if (Grille[l][i].pion.positionPion == 0)
             {
                 switch (Grille[l][i].cotes[0])
                 {
@@ -343,7 +343,7 @@ void afficher_ligne_couleur(struct tuile_s Grille[143][143], int l, int g, int d
         if (Grille[l][i].posee == 1)
         // Grille[l][i].cotes[3]
         {
-            if (Grille[l][i].pion.positionPion == 'W')
+            if (Grille[l][i].pion.positionPion == 3)
             {
                 switch (Grille[l][i].cotes[3])
                 {
@@ -450,7 +450,7 @@ void afficher_ligne_couleur(struct tuile_s Grille[143][143], int l, int g, int d
                 }
             }
             // Grille[l][i].cotes[1]
-            if (Grille[l][i].pion.positionPion == 'E')
+            if (Grille[l][i].pion.positionPion == 1)
             {
                 switch (Grille[l][i].cotes[1])
                 {
@@ -526,7 +526,7 @@ void afficher_ligne_couleur(struct tuile_s Grille[143][143], int l, int g, int d
         }
         if (Grille[l][i].posee == 1)
         {
-            if (Grille[l][i].pion.positionPion == 'S')
+            if (Grille[l][i].pion.positionPion == 2)
             {
                 switch (Grille[l][i].cotes[2])
                 {
