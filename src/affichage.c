@@ -387,7 +387,7 @@ void afficher_ligne_couleur(struct tuile_s Grille[143][143], int l, int g, int d
                 }
             }
             // Grille[l][i].centre
-            if (Grille[l][i].pion.positionPion == 'C')
+            if (Grille[l][i].pion.positionPion == 4)
             {
                 switch (Grille[l][i].centre)
                 {

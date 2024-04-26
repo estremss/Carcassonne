@@ -3,7 +3,7 @@
 
 struct pion_s
 {
-    int idPion;        // -1 si appartient à personne, id joueur sinon
+    int idPion;       // -1 si appartient à personne, id joueur sinon
     int positionPion; // position du pion sur la tuile : {0, 1, 2, 3, 4} ou NULL
 };
 
@@ -20,6 +20,11 @@ struct tuile_s
 struct joueur_s
 {
     int idJoueur, points, pionsPoses, actif;
+};
+
+struct position
+{
+    int x, y, pere;
 };
 
 #endif // GAME_STRUCTURES
