@@ -894,7 +894,7 @@ void affichage(struct tuile_s Grille[143][143], struct tuile_s Pile[72], int nb_
 
     system("clear");
     afficher_joueurs(nb_joueurs, nb_tours, Joueur);
-    afficher_tuile_en_cours(Pile[nb_tours]);
+    //afficher_tuile_en_cours(Pile[nb_tours]);
     afficher_tuile_en_cours_couleur(Pile[nb_tours]);
 
     // Trouver les max
@@ -916,6 +916,8 @@ void affichage(struct tuile_s Grille[143][143], struct tuile_s Pile[72], int nb_
             }
         }
     }
+
+    //deplacer_tuile_en_derniere_position(Pile, nb_tours, Grille, &Pile[nb_tours], *h, *b, *g, *d);
 
     posable(Grille, Pile[nb_tours], *h, *b, *g, *d);
 

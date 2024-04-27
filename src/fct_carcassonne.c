@@ -18,16 +18,25 @@ struct tuile_s depiler(struct tuile_s *Pile, int nb_tours)
     return Pile[nb_tours];
 }
 
-void deplacer_tuile_en_derniere_position(struct tuile_s *Pile, int nb_tours)
+void deplacer_tuile_en_derniere_position(struct tuile_s *Pile, int nb_tours, struct tuile_s Grille[143][143], struct tuile_s *T, int h, int b, int g, int d)
 {
-    int i = 0;
+    int i, cnt_posable = 0;
     struct tuile_s save = Pile[nb_tours];
 
-    for (i = nb_tours; i < NB_TUILES - 1; i++) // - 1 car avec le i+1 on ferait un core dumped sinon
+    for (i = 0; i < 4; i++)
     {
-        Pile[i] = Pile[i + 1];
+        cnt_posable += posable(Grille, *T, h, b, g, d);
+        rotation(T);
     }
-    Pile[nb_tours] = save;
+
+    if (cnt_posable == 0)
+    {
+        for (i = nb_tours; i < NB_TUILES - 1; i++) // - 1 car avec le i+1 on ferait un core dumped sinon
+        {
+            Pile[i] = Pile[i + 1];
+        }
+        Pile[nb_tours] = save;
+    }
 }
 
 void melange(struct tuile_s *Pile)
@@ -62,10 +71,10 @@ void parametre_partie(struct tuile_s *Pile, struct tuile_s Grille[143][143], int
     melange(Pile);
 }
 
-void posable(struct tuile_s Grille[143][143], struct tuile_s T, int h, int b, int g, int d) // 1 mars
-{                                                                                           // on n'a pas testé la fonction
+int posable(struct tuile_s Grille[143][143], struct tuile_s T, int h, int b, int g, int d) // 1 mars
+{                                                                                          // return le nb d'endroit où la tuile est posable                                                                                           // on n'a pas testé la fonction
     // à confirmer si pour 'jouable' on doit utiliser des pointeurs ou pas
-    int i, j;
+    int i, j, cnt_posable = 0;
     for (i = h - 1; i <= b + 1; i++)
     {
         for (j = g - 1; j <= d + 1; j++)
@@ -79,7 +88,10 @@ void posable(struct tuile_s Grille[143][143], struct tuile_s T, int h, int b, in
                         ((T.cotes[1] == Grille[i][j + 1].cotes[3] || Grille[i][j + 1].posee == 0) || ((T.cotes[1] == 'v' || T.cotes[1] == 'b') && (Grille[i][j + 1].cotes[3] == 'v' || Grille[i][j + 1].cotes[3] == 'b' || Grille[i][j + 1].posee == 0))) &&
                         ((T.cotes[2] == Grille[i + 1][j].cotes[0] || Grille[i + 1][j].posee == 0) || ((T.cotes[2] == 'v' || T.cotes[2] == 'b') && (Grille[i + 1][j].cotes[0] == 'v' || Grille[i + 1][j].cotes[0] == 'b' || Grille[i + 1][j].posee == 0))) &&
                         ((T.cotes[3] == Grille[i][j - 1].cotes[1] || Grille[i][j - 1].posee == 0) || ((T.cotes[3] == 'v' || T.cotes[3] == 'b') && (Grille[i][j - 1].cotes[1] == 'v' || Grille[i][j - 1].cotes[1] == 'b' || Grille[i][j - 1].posee == 0))))
+                    {
                         Grille[i][j].jouable = 'O';
+                        cnt_posable++;
+                    }
                     else
                         Grille[i][j].jouable = 'X';
                 }
@@ -90,6 +102,7 @@ void posable(struct tuile_s Grille[143][143], struct tuile_s T, int h, int b, in
                 Grille[i][j].jouable = 'X';
         }
     }
+    return cnt_posable;
 }
 
 void poser_tuile(struct tuile_s Grille[143][143], struct tuile_s Pile[72], int *nb_tours, int nb_joueurs, struct joueur_s *Joueur)
@@ -115,7 +128,7 @@ void poser_tuile(struct tuile_s Grille[143][143], struct tuile_s Pile[72], int *
     }
     else
     {
-        printf("La tuile n'est pas jouable ici.\n\n");
+        printf("\nLa tuile n'est pas jouable ici.\n\n");
         interface_joueur(Grille, Pile, nb_tours, nb_joueurs, Joueur);
     }
 }
@@ -142,19 +155,18 @@ void poser_pion(struct tuile_s Grille[143][143], struct joueur_s *Joueur, int nb
                (position == 3 && Grille[x][y].cotes[3] == 'p') ||
                (position == 4 && Grille[x][y].centre == 'p') ||
                (position == 4 && Grille[x][y].centre == 'V') ||
+               (Grille[x][y].centre == 'r' && position == 4 && verif_route_iteratif(Grille, x, y, position) != 0) ||
+               (position < 4 && Grille[x][y].cotes[position] == 'r' && verif_route_iteratif(Grille, x, y, position) != 0) ||
                (position < 0 || position > 4))
         {
-            printf("Le pion n'est pas posable sur les Villages et les prés.\nVotre entrée n'est pas valide.\n\n");
+            if ((Grille[x][y].centre == 'r' && position == 4 && verif_route_iteratif(Grille, x, y, position) != 0) ||
+                (position < 4 && Grille[x][y].cotes[position] == 'r' && verif_route_iteratif(Grille, x, y, position) != 0))
+            {
+                printf("erreur fonction verif route iteratif");
+            }
+            printf("Le pion n'est pas posable ici.\n\n");
             printf("Choisissez le côté où poser le pion :\n\t-0 : en haut\n\t-1 : à droite\n\t-2 : en bas \n\t-3 : a gauche \n\t-4 : au centre\n");
             scanf("%d", &position);
-        }
-
-        if ((Grille[x][y].centre == 'r' && position == 4 && verif_route_iteratif(Grille, x, y) != 0) ||
-            (position < 4 && Grille[x][y].cotes[position] == 'r' && verif_route_iteratif(Grille, x, y) != 0))
-        {
-            printf("erreur fonction verif route iteratif");
-            scanf("%d", position);
-            scanf("%d", position);
         }
 
         Grille[x][y].pion.idPion = (nb_tours - 1) % nb_joueurs;
@@ -287,32 +299,68 @@ struct position T_direction_route(int cote, int i, int j)
     }
 }
 
-int verif_route_iteratif(struct tuile_s Grille[143][143], int x, int y)
+int verif_route_iteratif(struct tuile_s Grille[143][143], int x, int y, int position_pion)
 { // return 0 si c'est bon et -1 sinon
     struct position P;
-    int direction_route = 0;
+    int direction_route = 0, direction_route2 = -1;
 
-    while (direction_route < 4 && Grille[x][y].cotes[direction_route] != 'r')
-        direction_route++;
+    if (Grille[x][y].centre != 'r')
+    { // si c'est une fin de route
+        while (direction_route < 4 && (direction_route != position_pion))
+            direction_route++;
+    }
+    else
+    { // si la route a deux directions
+        while (direction_route < 4 && Grille[x][y].cotes[direction_route] != 'r')
+            direction_route++;
+
+        direction_route2 = direction_route + 1;
+        while (Grille[x][y].cotes[direction_route2] != 'r')
+            direction_route2++;
+    }
 
     P = T_direction_route(direction_route, x, y);
 
-    while (Grille[P.x][P.y].cotes[P.pere] == 'r' && Grille[P.x][P.y].pion.positionPion != P.pere)
+    while (Grille[P.x][P.y].cotes[P.pere] == 'r')
     {
-        if (Grille[P.x][P.y].centre != 'r') // condition d'arrêt TRUE : fin de route
-            return 0;
-
-        if (Grille[P.x][P.y].centre == 'r' && Grille[P.x][P.y].pion.positionPion == 4) // condition d'arrêt FALSE: pion au centre sur route
+        if (Grille[P.x][P.y].pion.positionPion == P.pere || (Grille[P.x][P.y].centre == 'r' && Grille[P.x][P.y].pion.positionPion == 4)) // condition d'arrêt FALSE: pion sur tuile d'arrivée ou au centre sur route
             return -1;
 
-        direction_route = 0;
-        while (Grille[x][y].cotes[direction_route] != 'r' && direction_route == P.pere)
-            direction_route++;
+        if (Grille[P.x][P.y].centre != 'r') // condition d'arrêt TRUE : fin de route
+            break;
+
+        direction_route = (P.pere + 1) % 4;
+        while (Grille[P.x][P.y].cotes[direction_route] != 'r')
+            direction_route = (direction_route + 1) % 4;
 
         if (Grille[P.x][P.y].pion.positionPion == direction_route) // condition d'arrêt FALSE: si il y a un pion sur la direction où on veut aller
             return -1;
 
         P = T_direction_route(direction_route, P.x, P.y); // on peut continuer le traitement et donner la prochaine tuile à P
+    }
+
+    // si la route a deux directions
+    if (direction_route2 != -1)
+    {
+        P = T_direction_route(direction_route2, x, y);
+
+        while (Grille[P.x][P.y].cotes[P.pere] == 'r')
+        {
+            if (Grille[P.x][P.y].pion.positionPion == P.pere || (Grille[P.x][P.y].centre == 'r' && Grille[P.x][P.y].pion.positionPion == 4)) // condition d'arrêt FALSE: pion sur tuile d'arrivée ou au centre sur route
+                return -1;
+
+            if (Grille[P.x][P.y].centre != 'r') // condition d'arrêt TRUE : fin de route
+                break;
+
+            direction_route2 = (P.pere + 1) % 4;
+            while (Grille[P.x][P.y].cotes[direction_route2] != 'r')
+                direction_route2 = (direction_route2 + 1) % 4;
+
+            if (Grille[P.x][P.y].pion.positionPion == direction_route2) // condition d'arrêt FALSE: si il y a un pion sur la direction où on veut aller
+                return -1;
+
+            P = T_direction_route(direction_route2, P.x, P.y); // on peut continuer le traitement et donner la prochaine tuile à P
+        }
     }
 
     return 0; // conventionnel

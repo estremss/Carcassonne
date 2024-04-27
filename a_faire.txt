@@ -1,5 +1,0 @@
-Réglages :
-
-probleme scanf pion
-demander au prof qu'il nous aide pour créer un fichier affichage
-si on met autre chose qu'un int on a une boucle infinie (² ou ")
