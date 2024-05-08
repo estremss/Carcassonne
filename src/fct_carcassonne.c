@@ -366,6 +366,54 @@ int verif_route_iteratif(struct tuile_s Grille[143][143], int x, int y, int posi
     return 0; // conventionnel
 }
 
+// tableau global qui stocke à chaque indice, le nombre de pion que le joueur associé à l'indice a posé sur la route que l'on compte
+// (dsl c'est un peu compliqué à expliquer par commentaire)
+int pions_route_actuelle[5];
+
+int pts_route(struct tuile_s Grille[143][143], int x, int y, int position_pion)
+{   // return le nombre de points rapporté par la pose de la route dans le tour
+    // reste à définir où est-ce que la fonction sera appelée
+
+    struct position P;
+    int direction_route = 0, direction_route2 = -1;
+    int i;
+    for (i = 0; i < 5; i++) // on remet le tableau à 0 à chaque comptage de route
+        pions_route_actuelle[i] = 0;
+
+    if (Grille[x][y].centre != 'r')
+    { // si c'est une fin de route
+        while (direction_route < 4 && (direction_route != position_pion))
+            direction_route++;
+    }
+    else
+    { // si la route a deux directions
+        while (direction_route < 4 && Grille[x][y].cotes[direction_route] != 'r')
+            direction_route++;
+
+        direction_route2 = direction_route + 1;
+        while (Grille[x][y].cotes[direction_route2] != 'r')
+            direction_route2++;
+    }
+
+    P = T_direction_route(direction_route, x, y);
+
+    while (Grille[P.x][P.y].cotes[P.pere] == 'r' && Grille[P.x][P.y].posee == 1)
+    {
+        // ajout du premier éventuel pion
+        for (i = 0; i < 4; i++) // le cas si le pion est sur un coté
+        {
+            if (Grille[P.x][P.y].cotes[i] == 'r' && Grille[P.x][P.y].pion.positionPion == i)
+                pions_route_actuelle[Grille[P.x][P.y].pion.idPion] += 1; // on ajoute un pion au joueur correspondant dans le tableau de comptage des pions des joueurs
+        }
+
+        if (Grille[P.x][P.y].centre == 'r' && Grille[P.x][P.y].pion.positionPion == 4)
+            pions_route_actuelle[Grille[P.x][P.y].pion.idPion] += 1; // on ajoute un pion au joueur correspondant dans le tableau de comptage des pions des joueurs
+    
+        // on trouve la direction de la route et on détermine le nouveau P
+        // j'étais fatigué pour continuer donc il faut que je me rappelle des idées quand je vais reprendre
+    }
+}
+
 void rotation(struct tuile_s *T) // 1 mars
 {
     int i, tmp = T->cotes[3];

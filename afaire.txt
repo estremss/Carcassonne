@@ -1,10 +1,4 @@
-affichage pion par dessus blason :
-    en vrai c'est quand même jouable
-
-empecher utilisateur de poser pion au centre sur une tuile coin :
-    c'est vraiment un cas spécifique où l'utilisateur est con
-
-commencer verif_route:
+comptage pts route:
 
 vérifier que le cas si on ne peut pas poser de tuile est bien géré :
-    remettre la tuile à la fin de la pile (normalement c'est bon mais pas moyen de confirmer tant qu'on n'a pas d'erreurs)
+    remettre la tuile à la fin de la pile (evan l'a fait mais pas moyen de confirmer tant qu'on n'a pas d'erreurs)
