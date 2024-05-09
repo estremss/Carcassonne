@@ -107,7 +107,7 @@ int posable(struct tuile_s Grille[143][143], struct tuile_s T, int h, int b, int
 
 void poser_tuile(struct tuile_s Grille[143][143], struct tuile_s Pile[72], int *nb_tours, int nb_joueurs, struct joueur_s *Joueur)
 {
-    int x, y;
+    int x, y, i;
 
     printf("Entrez le numéro de la colonne : ");
     scanf("%d", &y);
@@ -124,6 +124,22 @@ void poser_tuile(struct tuile_s Grille[143][143], struct tuile_s Pile[72], int *
     { // MODIFIER POUR QUE L'utilistaeur NE PUISSE PAS POSER PIONS SUR PRE ET APPLIQUER LE CHANGEMENT DE COULEUR DU PION
         Grille[x][y] = depiler(Pile, *nb_tours);
         poser_pion(Grille, Joueur, *nb_tours, nb_joueurs, x, y);
+
+        if (Grille[x][y].centre != 'r')
+        {
+            for (i = 0; i < 4; i++)
+            {
+                if (Grille[x][y].cotes[i] == 'r')
+                {
+                    pts_route(Grille, x, y, i, Joueur);
+                }
+            }
+        }
+        else
+        {
+            pts_route(Grille, x, y, 4, Joueur);
+        }
+
         *nb_tours += 1;
     }
     else
@@ -146,8 +162,11 @@ void poser_pion(struct tuile_s Grille[143][143], struct joueur_s *Joueur, int nb
     {
         int position;
 
-        printf("Choisissez le côté où poser le pion :\n\t-0 : en haut\n\t-1 : à droite\n\t-2 : en bas \n\t-3 : a gauche \n\t-4 : au centre\n");
+        printf("Choisissez le côté où poser le pion :\n\t-0 : Haut\n\t-1 : Droite\n\t-2 : Bas \n\t-3 : Gauche \n\t-4 : Centre\n\t-5 : Annuler\n");
         scanf("%d", &position);
+
+        if (position == 5)
+            return;
 
         while ((position == 0 && Grille[x][y].cotes[0] == 'p') ||
                (position == 2 && Grille[x][y].cotes[2] == 'p') ||
@@ -159,14 +178,19 @@ void poser_pion(struct tuile_s Grille[143][143], struct joueur_s *Joueur, int nb
                (position < 4 && Grille[x][y].cotes[position] == 'r' && verif_route_iteratif(Grille, x, y, position) != 0) ||
                (position < 0 || position > 4))
         {
-            if ((Grille[x][y].centre == 'r' && position == 4 && verif_route_iteratif(Grille, x, y, position) != 0) ||
-                (position < 4 && Grille[x][y].cotes[position] == 'r' && verif_route_iteratif(Grille, x, y, position) != 0))
-            {
-                printf("erreur fonction verif route iteratif");
-            }
+            // DEBUG
+            // if ((Grille[x][y].centre == 'r' && position == 4 && verif_route_iteratif(Grille, x, y, position) != 0) ||
+            //     (position < 4 && Grille[x][y].cotes[position] == 'r' && verif_route_iteratif(Grille, x, y, position) != 0))
+            // {
+            //     printf("erreur fonction verif route iteratif\n");
+            // }
+
             printf("Le pion n'est pas posable ici.\n\n");
-            printf("Choisissez le côté où poser le pion :\n\t-0 : en haut\n\t-1 : à droite\n\t-2 : en bas \n\t-3 : a gauche \n\t-4 : au centre\n");
+            printf("Choisissez le côté où poser le pion :\n\t-0 : Haut\n\t-1 : Droite\n\t-2 : Bas \n\t-3 : Gauche \n\t-4 : Centre\n\t-5 : Annuler\n");
             scanf("%d", &position);
+
+            if (position == 5)
+                return;
         }
 
         Grille[x][y].pion.idPion = (nb_tours - 1) % nb_joueurs;
@@ -321,7 +345,7 @@ int verif_route_iteratif(struct tuile_s Grille[143][143], int x, int y, int posi
 
     P = T_direction_route(direction_route, x, y);
 
-    while (Grille[P.x][P.y].cotes[P.pere] == 'r')
+    while (Grille[P.x][P.y].cotes[P.pere] == 'r' && (P.x != x || P.y != y)) // deuxième condition au cas où si la route devient une boucle avec la tuile qu'on veut poser
     {
         if (Grille[P.x][P.y].pion.positionPion == P.pere || (Grille[P.x][P.y].centre == 'r' && Grille[P.x][P.y].pion.positionPion == 4)) // condition d'arrêt FALSE: pion sur tuile d'arrivée ou au centre sur route
             return -1;
@@ -338,6 +362,9 @@ int verif_route_iteratif(struct tuile_s Grille[143][143], int x, int y, int posi
 
         P = T_direction_route(direction_route, P.x, P.y); // on peut continuer le traitement et donner la prochaine tuile à P
     }
+
+    if (P.y == x && P.y == y) // si on a fait une boucle
+        return 0;
 
     // si la route a deux directions
     if (direction_route2 != -1)
@@ -366,19 +393,14 @@ int verif_route_iteratif(struct tuile_s Grille[143][143], int x, int y, int posi
     return 0; // conventionnel
 }
 
-// tableau global qui stocke à chaque indice, le nombre de pion que le joueur associé à l'indice a posé sur la route que l'on compte
-// (dsl c'est un peu compliqué à expliquer par commentaire)
-int pions_route_actuelle[5];
-
-int pts_route(struct tuile_s Grille[143][143], int x, int y, int position_pion)
-{   // return le nombre de points rapporté par la pose de la route dans le tour
+void pts_route(struct tuile_s Grille[143][143], int x, int y, int position_pion, struct joueur_s *Joueurs)
+{ // return le nombre de points rapporté par la pose de la route dans le tour
     // reste à définir où est-ce que la fonction sera appelée
 
+    int pions_route_actuelle[5];
     struct position P;
     int direction_route = 0, direction_route2 = -1;
-    int i;
-    for (i = 0; i < 5; i++) // on remet le tableau à 0 à chaque comptage de route
-        pions_route_actuelle[i] = 0;
+    int i, cnt_pts = 1;
 
     if (Grille[x][y].centre != 'r')
     { // si c'est une fin de route
@@ -397,8 +419,9 @@ int pts_route(struct tuile_s Grille[143][143], int x, int y, int position_pion)
 
     P = T_direction_route(direction_route, x, y);
 
-    while (Grille[P.x][P.y].cotes[P.pere] == 'r' && Grille[P.x][P.y].posee == 1)
+    while (Grille[P.x][P.y].cotes[P.pere] == 'r' && (P.x != x || P.y != y))
     {
+        cnt_pts += 1;
         // ajout du premier éventuel pion
         for (i = 0; i < 4; i++) // le cas si le pion est sur un coté
         {
@@ -408,9 +431,62 @@ int pts_route(struct tuile_s Grille[143][143], int x, int y, int position_pion)
 
         if (Grille[P.x][P.y].centre == 'r' && Grille[P.x][P.y].pion.positionPion == 4)
             pions_route_actuelle[Grille[P.x][P.y].pion.idPion] += 1; // on ajoute un pion au joueur correspondant dans le tableau de comptage des pions des joueurs
-    
-        // on trouve la direction de la route et on détermine le nouveau P
-        // j'étais fatigué pour continuer donc il faut que je me rappelle des idées quand je vais reprendre
+
+        if (Grille[P.x][P.y].centre == 'r')
+        {
+            direction_route = (P.pere + 1) % 4;
+            while (Grille[P.x][P.y].cotes[direction_route] != 'r')
+                direction_route = (direction_route + 1) % 4;
+        }
+        else
+            break; // on break car on est sur une fin de route
+
+        P = T_direction_route(direction_route, P.x, P.y);
+    }
+
+    if (direction_route2 != -1 && P.x != x && P.y != y && Grille[P.x][P.y].posee == 1)
+    {
+        P = T_direction_route(direction_route2, x, y);
+
+        while (Grille[P.x][P.y].cotes[P.pere] == 'r' && Grille[P.x][P.y].posee == 1 && (P.x != x || P.y != y))
+        {
+            cnt_pts += 1;
+            // ajout du premier éventuel pion
+            for (i = 0; i < 4; i++) // le cas si le pion est sur un coté
+            {
+                if (Grille[P.x][P.y].cotes[i] == 'r' && Grille[P.x][P.y].pion.positionPion == i)
+                    pions_route_actuelle[Grille[P.x][P.y].pion.idPion] += 1; // on ajoute un pion au joueur correspondant dans le tableau de comptage des pions des joueurs
+            }
+
+            if (Grille[P.x][P.y].centre == 'r' && Grille[P.x][P.y].pion.positionPion == 4)
+                pions_route_actuelle[Grille[P.x][P.y].pion.idPion] += 1; // on ajoute un pion au joueur correspondant dans le tableau de comptage des pions des joueurs
+
+            if (Grille[P.x][P.y].centre == 'r')
+            {
+                direction_route2 = (P.pere + 1) % 4;
+                while (Grille[P.x][P.y].cotes[direction_route2] != 'r')
+                    direction_route2 = (direction_route2 + 1) % 4;
+            }
+            else
+                break; // on break car on est sur une fin de route (il faudra surement mettre un if après)
+
+            P = T_direction_route(direction_route2, P.x, P.y);
+        }
+    }
+
+    if (Grille[P.x][P.y].posee == 1 || (P.x == x && P.y == y))
+    {
+        int max_tableau = 1;
+        for (i = 0; i < 5; i++)
+        {
+            if (pions_route_actuelle[i] >= max_tableau)
+                max_tableau = pions_route_actuelle[i];
+        }
+        for (i = 0; i < 5; i++)
+        {
+            if (pions_route_actuelle[i] == max_tableau)
+                Joueurs[i].points += cnt_pts;
+        }
     }
 }
 

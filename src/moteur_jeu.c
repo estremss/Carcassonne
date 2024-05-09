@@ -39,6 +39,7 @@ int main(void)
     {
         affichage(Grille, Pile, nb_tours, nb_joueurs, Joueurs, &h, &b, &g, &d);
         interface_joueur(Grille, Pile, &nb_tours, nb_joueurs, Joueurs);
+        
     }
     
     return 0;

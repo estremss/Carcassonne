@@ -2,3 +2,8 @@ comptage pts route:
 
 vérifier que le cas si on ne peut pas poser de tuile est bien géré :
     remettre la tuile à la fin de la pile (evan l'a fait mais pas moyen de confirmer tant qu'on n'a pas d'erreurs)
+
+quand une zone est fermée (pendant la partie):
+    mettre traitee = 1 à toute la zone
+
+le tableau traitee[5] pour voir si c'est traité
