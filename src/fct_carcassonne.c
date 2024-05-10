@@ -18,15 +18,15 @@ struct tuile_s depiler(struct tuile_s *Pile, int nb_tours)
     return Pile[nb_tours];
 }
 
-void deplacer_tuile_en_derniere_position(struct tuile_s *Pile, int nb_tours, struct tuile_s Grille[143][143], struct tuile_s *T, int h, int b, int g, int d)
+int deplacer_tuile_en_derniere_position(struct tuile_s *Pile, int nb_tours, struct tuile_s Grille[143][143], int h, int b, int g, int d)
 {
     int i, cnt_posable = 0;
     struct tuile_s save = Pile[nb_tours];
 
     for (i = 0; i < 4; i++)
     {
-        cnt_posable += posable(Grille, *T, h, b, g, d);
-        rotation(T);
+        cnt_posable += posable(Grille, save, h, b, g, d);
+        rotation(&save);
     }
 
     if (cnt_posable == 0)
@@ -35,8 +35,11 @@ void deplacer_tuile_en_derniere_position(struct tuile_s *Pile, int nb_tours, str
         {
             Pile[i] = Pile[i + 1];
         }
-        Pile[nb_tours] = save;
+        Pile[NB_TUILES - 1] = save;
+        // deplacer_tuile_en_derniere_position(Pile, nb_tours, Grille, h, b, g, d);
     }
+
+    return cnt_posable;
 }
 
 void melange(struct tuile_s *Pile)
@@ -68,7 +71,7 @@ void parametre_partie(struct tuile_s *Pile, struct tuile_s Grille[143][143], int
         parametre_partie(Pile, Grille, nb_joueurs, nb_ia);
     }
     Grille[NB_TUILES][NB_TUILES] = depiler(Pile, 0);
-    melange(Pile);
+    melange(Pile); // pour le debug on le laisse en commentaire
 }
 
 int posable(struct tuile_s Grille[143][143], struct tuile_s T, int h, int b, int g, int d) // 1 mars
@@ -399,8 +402,13 @@ void pts_route(struct tuile_s Grille[143][143], int x, int y, int position_pion,
 
     int pions_route_actuelle[5];
     struct position P;
+    struct tuile_s G_Traitees[143][143];
     int direction_route = 0, direction_route2 = -1;
-    int i, cnt_pts = 1;
+    int i, j, cnt_pts = 1;
+
+    for (i = 0; i < 143; i++)
+        for (j = 0; j < 143; j++)
+            G_Traitees[i][j] = Grille[i][j];
 
     if (Grille[x][y].centre != 'r')
     { // si c'est une fin de route
@@ -417,6 +425,8 @@ void pts_route(struct tuile_s Grille[143][143], int x, int y, int position_pion,
             direction_route2++;
     }
 
+    printf("direction 1 : %d\ndirection 2: %d", direction_route, direction_route2);
+
     P = T_direction_route(direction_route, x, y);
 
     while (Grille[P.x][P.y].cotes[P.pere] == 'r' && (P.x != x || P.y != y))
@@ -426,17 +436,25 @@ void pts_route(struct tuile_s Grille[143][143], int x, int y, int position_pion,
         for (i = 0; i < 4; i++) // le cas si le pion est sur un coté
         {
             if (Grille[P.x][P.y].cotes[i] == 'r' && Grille[P.x][P.y].pion.positionPion == i)
-                pions_route_actuelle[Grille[P.x][P.y].pion.idPion] += 1; // on ajoute un pion au joueur correspondant dans le tableau de comptage des pions des joueurs
+            {
+                G_Traitees[P.y][P.y].traitee[i] = 1;
+                pions_route_actuelle[Grille[P.x][P.y].pion.idPion] += 1;
+            } // on ajoute un pion au joueur correspondant dans le tableau de comptage des pions des joueurs
         }
 
         if (Grille[P.x][P.y].centre == 'r' && Grille[P.x][P.y].pion.positionPion == 4)
-            pions_route_actuelle[Grille[P.x][P.y].pion.idPion] += 1; // on ajoute un pion au joueur correspondant dans le tableau de comptage des pions des joueurs
+        {
+            G_Traitees[P.x][P.y].traitee[4] = 1;
+            pions_route_actuelle[Grille[P.x][P.y].pion.idPion] += 1;
+        } // on ajoute un pion au joueur correspondant dans le tableau de comptage des pions des joueurs
 
         if (Grille[P.x][P.y].centre == 'r')
         {
             direction_route = (P.pere + 1) % 4;
             while (Grille[P.x][P.y].cotes[direction_route] != 'r')
                 direction_route = (direction_route + 1) % 4;
+            
+            G_Traitees[P.x][P.y].traitee[direction_route] = 1;
         }
         else
             break; // on break car on est sur une fin de route
@@ -455,17 +473,25 @@ void pts_route(struct tuile_s Grille[143][143], int x, int y, int position_pion,
             for (i = 0; i < 4; i++) // le cas si le pion est sur un coté
             {
                 if (Grille[P.x][P.y].cotes[i] == 'r' && Grille[P.x][P.y].pion.positionPion == i)
-                    pions_route_actuelle[Grille[P.x][P.y].pion.idPion] += 1; // on ajoute un pion au joueur correspondant dans le tableau de comptage des pions des joueurs
+                {
+                    G_Traitees[P.x][P.y].traitee[i] = 1;
+                    pions_route_actuelle[Grille[P.x][P.y].pion.idPion] += 1;
+                } // on ajoute un pion au joueur correspondant dans le tableau de comptage des pions des joueurs
             }
 
             if (Grille[P.x][P.y].centre == 'r' && Grille[P.x][P.y].pion.positionPion == 4)
-                pions_route_actuelle[Grille[P.x][P.y].pion.idPion] += 1; // on ajoute un pion au joueur correspondant dans le tableau de comptage des pions des joueurs
+            {
+                G_Traitees[P.x][P.y].traitee[i] = 1;
+                pions_route_actuelle[Grille[P.x][P.y].pion.idPion] += 1;
+            } // on ajoute un pion au joueur correspondant dans le tableau de comptage des pions des joueurs
 
             if (Grille[P.x][P.y].centre == 'r')
             {
                 direction_route2 = (P.pere + 1) % 4;
                 while (Grille[P.x][P.y].cotes[direction_route2] != 'r')
                     direction_route2 = (direction_route2 + 1) % 4;
+
+                G_Traitees[P.x][P.y].traitee[i] = 1;
             }
             else
                 break; // on break car on est sur une fin de route (il faudra surement mettre un if après)
@@ -487,6 +513,10 @@ void pts_route(struct tuile_s Grille[143][143], int x, int y, int position_pion,
             if (pions_route_actuelle[i] == max_tableau)
                 Joueurs[i].points += cnt_pts;
         }
+
+        for (i = 0; i < 143; i++)
+            for(j = 0; j < 143; j++)
+                Grille[i][j] = G_Traitees[i][j];
     }
 }
 

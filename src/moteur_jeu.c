@@ -2,7 +2,7 @@
 #include "game_structures.h"
 #include "fct_carcassonne.h"
 #include "affichage.h"
-//#include "raylib.h"
+// #include "raylib.h"
 
 #define NB_TUILES 72
 
@@ -37,10 +37,10 @@ int main(void)
     // Boucle de gameplay
     while (nb_tours < 72)
     {
+        deplacer_tuile_en_derniere_position(Pile, nb_tours, Grille, h, b, g, d);
         affichage(Grille, Pile, nb_tours, nb_joueurs, Joueurs, &h, &b, &g, &d);
         interface_joueur(Grille, Pile, &nb_tours, nb_joueurs, Joueurs);
-        
     }
-    
+
     return 0;
 }

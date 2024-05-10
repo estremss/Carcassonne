@@ -12,6 +12,7 @@ struct tuile_s
     int id;
     char cotes[4];
     char centre;
+    int traitee[5]; // état de traitement du cote[i]
     int posee; // 1 si posée, 0 sinon
     struct pion_s pion;
     char jouable;

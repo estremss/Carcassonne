@@ -10,7 +10,7 @@ void melange(struct tuile_s *);
 
 struct tuile_s depiler(struct tuile_s *, int);
 
-void deplacer_tuile_en_derniere_position(struct tuile_s *, int, struct tuile_s[143][143], struct tuile_s *, int, int, int, int);
+int deplacer_tuile_en_derniere_position(struct tuile_s *, int, struct tuile_s[143][143], int, int, int, int);
 
 void parametre_partie(struct tuile_s *, struct tuile_s[143][143], int *, int *);
 
