@@ -44,6 +44,8 @@ int verif_route_iteratif(struct tuile_s[143][143], int, int, int);
 
 void pts_route(struct tuile_s[143][143], int, int, int, struct joueur_s *);
 
+void pts_abbaye(struct tuile_s [143][143], int , int , struct joueur_s *, int , int );
+
 struct position T_direction_route(int, int, int);
 
 #endif // FCT_CARCASSONNE

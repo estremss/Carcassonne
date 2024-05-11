@@ -71,7 +71,7 @@ void parametre_partie(struct tuile_s *Pile, struct tuile_s Grille[143][143], int
         parametre_partie(Pile, Grille, nb_joueurs, nb_ia);
     }
     Grille[NB_TUILES][NB_TUILES] = depiler(Pile, 0);
-    melange(Pile); // pour le debug on le laisse en commentaire
+    //melange(Pile); // pour le debug on le laisse en commentaire
 }
 
 int posable(struct tuile_s Grille[143][143], struct tuile_s T, int h, int b, int g, int d) // 1 mars
@@ -127,6 +127,8 @@ void poser_tuile(struct tuile_s Grille[143][143], struct tuile_s Pile[72], int *
     { // MODIFIER POUR QUE L'utilistaeur NE PUISSE PAS POSER PIONS SUR PRE ET APPLIQUER LE CHANGEMENT DE COULEUR DU PION
         Grille[x][y] = depiler(Pile, *nb_tours);
         poser_pion(Grille, Joueur, *nb_tours, nb_joueurs, x, y);
+        pts_abbaye(Grille,x, y,Joueur, *nb_tours,nb_joueurs);
+        
 
         if (Grille[x][y].centre != 'r')
         {
@@ -453,7 +455,7 @@ void pts_route(struct tuile_s Grille[143][143], int x, int y, int position_pion,
             direction_route = (P.pere + 1) % 4;
             while (Grille[P.x][P.y].cotes[direction_route] != 'r')
                 direction_route = (direction_route + 1) % 4;
-            
+
             G_Traitees[P.x][P.y].traitee[direction_route] = 1;
         }
         else
@@ -499,7 +501,6 @@ void pts_route(struct tuile_s Grille[143][143], int x, int y, int position_pion,
             P = T_direction_route(direction_route2, P.x, P.y);
         }
     }
-
     if (Grille[P.x][P.y].posee == 1 || (P.x == x && P.y == y))
     {
         int max_tableau = 1;
@@ -515,10 +516,41 @@ void pts_route(struct tuile_s Grille[143][143], int x, int y, int position_pion,
         }
 
         for (i = 0; i < 143; i++)
-            for(j = 0; j < 143; j++)
+            for (j = 0; j < 143; j++)
                 Grille[i][j] = G_Traitees[i][j];
     }
 }
+
+void pts_abbaye(struct tuile_s Grille[143][143], int x, int y, struct joueur_s *Joueurs, int nb_tours, int nb_joueurs)
+{//uniqument en pleine partie
+    if (Grille[x][y].centre == 'a'&& Grille[x][y].pion.positionPion == 4 )
+    {
+        if (Grille[x][y + 1].posee == 1 && Grille[x][y - 1].posee == 1 && Grille[x + 1][y].posee == 1 && Grille[x - 1][y].posee == 1 && Grille[x + 1][y + 1].posee == 1 && Grille[x - 1][y - 1].posee == 1 && Grille[x - 1][y + 1].posee == 1 && Grille[x + 1][y - 1].posee == 1)
+        {
+            Grille[x][y].traitee[4] = 1;
+            Joueurs[Grille[x][y].pion.idPion].points += 9;
+        }
+    }
+
+    for (int i = -1; i <= 1; ++i)
+    {
+        for (int j = -1; j <= 1; ++j)
+        {
+            if (i == 0 && j == 0)
+                continue;//ça nous evite le cas ou  c'est zero psk sinon on verifierai que grille[x] et [y]
+
+            if (Grille[x + i][y + j].centre == 'a' && Grille[x + i][y + j].pion.positionPion == 4  && (Grille[x + i][y + j].traitee[4] != 1 && Grille[x + i][y + j].pion.idPion!=-1))
+            {
+                if (Grille[x + i][y + j + 1].posee == 1 && Grille[x + i][y + j - 1].posee == 1 && Grille[x + i + 1][y + j].posee == 1 && Grille[x + i - 1][y + j].posee == 1 && Grille[x + i + 1][y + j + 1].posee == 1 && Grille[x + i - 1][y + j - 1].posee == 1 && Grille[x + i - 1][y + j + 1].posee == 1 && Grille[x + i + 1][y + j - 1].posee == 1)
+                {
+                    Grille[x + i][y + j].traitee[4] = 1;
+                    Joueurs[Grille[x + i][y + j].pion.idPion].points += 9;
+                }
+            }
+        }
+    }
+}
+
 
 void rotation(struct tuile_s *T) // 1 mars
 {

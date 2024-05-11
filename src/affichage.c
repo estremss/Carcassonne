@@ -826,3 +826,23 @@ void affichage(struct tuile_s Grille[143][143], struct tuile_s Pile[72], int nb_
     }
     printf("\n\n");
 }
+void Affichage_fin(struct joueur_s *Joueurs,int nb_joueurs ){
+    int i=0;
+    struct joueur_s classement[5];
+    int max;
+printf("╔══════════════════════════════════╦═════════╦════════════════════════╗\n");
+printf("║               Joueurs            ║   pts   ║       classement       ║\n");
+printf("╠══════════════════════════════════╬═════════╬════════════════════════╣\n");
+for (i=0;i<nb_joueurs;i++){
+    if(Joueurs[i].points>max);
+
+    printf("║ player %d                        ║    %d   ║           %d            ║\n",i,Joueurs[i].points,classement);
+    printf("╠══════════════════════════════════╬═════════╬════════════════════════╣\n");
+}
+
+printf("╚══════════════════════════════════╩═════════╩════════════════════════╝\n");
+
+
+
+
+}
