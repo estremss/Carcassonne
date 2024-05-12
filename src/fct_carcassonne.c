@@ -71,7 +71,7 @@ void parametre_partie(struct tuile_s *Pile, struct tuile_s Grille[143][143], int
         parametre_partie(Pile, Grille, nb_joueurs, nb_ia);
     }
     Grille[NB_TUILES][NB_TUILES] = depiler(Pile, 0);
-    //melange(Pile); // pour le debug on le laisse en commentaire
+    melange(Pile); // pour le debug on le laisse en commentaire
 }
 
 int posable(struct tuile_s Grille[143][143], struct tuile_s T, int h, int b, int g, int d) // 1 mars
@@ -614,8 +614,8 @@ void pts_route(struct tuile_s Grille[143][143], int x, int y, int direction, str
     // cas où la dernière tuile est posee (donc fin de route)
     if (Grille[P.x][P.y].posee == 1)
     {
-        for (i = 0; i < 5; i++)
-            printf("J%d : %d\t", i + 1, t_pion_pose[i]);
+        // for (i = 0; i < 5; i++)
+        //     printf("J%d : %d\t", i + 1, t_pion_pose[i]);
 
         for (i = 0; i < 5; i++)
             if (t_pion_pose[i] >= max_pion)
