@@ -71,7 +71,7 @@ void parametre_partie(struct tuile_s *Pile, struct tuile_s Grille[143][143], int
         parametre_partie(Pile, Grille, nb_joueurs, nb_ia);
     }
     Grille[NB_TUILES][NB_TUILES] = depiler(Pile, 0);
-    melange(Pile); // pour le debug on le laisse en commentaire
+    //melange(Pile); // pour le debug on le laisse en commentaire
 }
 
 int posable(struct tuile_s Grille[143][143], struct tuile_s T, int h, int b, int g, int d) // 1 mars
@@ -636,19 +636,16 @@ void pts_route(struct tuile_s Grille[143][143], int x, int y, int direction, str
 }
 
 void pts_abbaye(struct tuile_s Grille[143][143], int x, int y, struct joueur_s *Joueurs, int nb_tours, int nb_joueurs)
-{ // uniquement en pleine partie
+{ // uniqument en pleine partie
     if (Grille[x][y].centre == 'a' && Grille[x][y].pion.positionPion == 4)
     {
-        if (Grille[x][y + 1].posee == 1 && Grille[x][y - 1].posee == 1 &&
-            Grille[x + 1][y].posee == 1 && Grille[x - 1][y].posee == 1 &&
-            Grille[x + 1][y + 1].posee == 1 && Grille[x - 1][y - 1].posee == 1 &&
-            Grille[x - 1][y + 1].posee == 1 && Grille[x + 1][y - 1].posee == 1)
+        if (Grille[x][y + 1].posee == 1 && Grille[x][y - 1].posee == 1 && Grille[x + 1][y].posee == 1 && Grille[x - 1][y].posee == 1 && Grille[x + 1][y + 1].posee == 1 && Grille[x - 1][y - 1].posee == 1 && Grille[x - 1][y + 1].posee == 1 && Grille[x + 1][y - 1].posee == 1)
         {
             Grille[x][y].traitee[4] = 1;
             Joueurs[Grille[x][y].pion.idPion].points += 9;
+            Joueurs[Grille[x][y].pion.idPion].pionsPoses -= 1;
             Grille[x][y].pion.idPion = -1;
             Grille[x][y].pion.positionPion = -1;
-            Joueurs[Grille[x][y].pion.idPion].pionsPoses -= 1;
         }
     }
 
@@ -659,19 +656,15 @@ void pts_abbaye(struct tuile_s Grille[143][143], int x, int y, struct joueur_s *
             if (i == 0 && j == 0)
                 continue; // ça nous evite le cas ou  c'est zero psk sinon on verifierai que grille[x] et [y]
 
-            if (Grille[x + i][y + j].centre == 'a' && Grille[x + i][y + j].pion.positionPion == 4 &&
-                (Grille[x + i][y + j].traitee[4] != 1 && Grille[x + i][y + j].pion.idPion != -1))
+            if (Grille[x + i][y + j].centre == 'a' && Grille[x + i][y + j].pion.positionPion == 4 && (Grille[x + i][y + j].traitee[4] != 1 && Grille[x + i][y + j].pion.idPion != -1))
             {
-                if (Grille[x + i][y + j + 1].posee == 1 && Grille[x + i][y + j - 1].posee == 1 &&
-                    Grille[x + i + 1][y + j].posee == 1 && Grille[x + i - 1][y + j].posee == 1 &&
-                    Grille[x + i + 1][y + j + 1].posee == 1 && Grille[x + i - 1][y + j - 1].posee == 1 &&
-                    Grille[x + i - 1][y + j + 1].posee == 1 && Grille[x + i + 1][y + j - 1].posee == 1)
+                if (Grille[x + i][y + j + 1].posee == 1 && Grille[x + i][y + j - 1].posee == 1 && Grille[x + i + 1][y + j].posee == 1 && Grille[x + i - 1][y + j].posee == 1 && Grille[x + i + 1][y + j + 1].posee == 1 && Grille[x + i - 1][y + j - 1].posee == 1 && Grille[x + i - 1][y + j + 1].posee == 1 && Grille[x + i + 1][y + j - 1].posee == 1)
                 {
                     Grille[x + i][y + j].traitee[4] = 1;
                     Joueurs[Grille[x + i][y + j].pion.idPion].points += 9;
+                    Joueurs[Grille[x + i][y + j].pion.idPion].pionsPoses -= 1;
                     Grille[x + i][y + j].pion.idPion = -1;
                     Grille[x + i][y + j].pion.positionPion = -1;
-                    Joueurs[Grille[x + i][y + j].pion.idPion].pionsPoses -= 1;
                 }
             }
         }
