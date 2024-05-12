@@ -760,7 +760,7 @@ void affichage(struct tuile_s Grille[143][143], struct tuile_s Pile[72], int nb_
 
     system("clear");
     afficher_joueurs(nb_joueurs, nb_tours, Joueur);
-    afficher_tuile_en_cours(Pile[nb_tours]);
+    //afficher_tuile_en_cours(Pile[nb_tours]);
     afficher_tuile_en_cours_couleur(Pile[nb_tours]);
 
     // Trouver les max
@@ -826,23 +826,22 @@ void affichage(struct tuile_s Grille[143][143], struct tuile_s Pile[72], int nb_
     }
     printf("\n\n");
 }
-void Affichage_fin(struct joueur_s *Joueurs,int nb_joueurs ){
-    int i=2;
+void Affichage_fin(struct joueur_s *Joueurs, int nb_joueurs)
+{
+    int i = 2;
     struct joueur_s classement[5];
     int max;
-printf("╔══════════════════════════════════╦═════════╦════════════════════════╗\n");
-printf("║               Joueurs            ║   Pts   ║       classement       ║\n");
-printf("╠══════════════════════════════════╬═════════╬════════════════════════╣\n");
-for (i=0;i<nb_joueurs;i++){
-    if(Joueurs[i].points>max);
-
-    printf("║ player %d                        ║    %d   ║           %d            ║\n",i,Joueurs[i].points,classement);
+    printf("╔══════════════════════════════════╦═════════╦════════════════════════╗\n");
+    printf("║               Joueurs            ║   Pts   ║       classement       ║\n");
     printf("╠══════════════════════════════════╬═════════╬════════════════════════╣\n");
-}
+    for (i = 0; i < nb_joueurs; i++)
+    {
+        if (Joueurs[i].points > max)
+            ;
 
-printf("╚══════════════════════════════════╩═════════╩════════════════════════╝\n");
+        printf("║ player %d                        ║    %d   ║           %d            ║\n", i, Joueurs[i].points, classement);
+        printf("╠══════════════════════════════════╬═════════╬════════════════════════╣\n");
+    }
 
-
-
-
+    printf("╚══════════════════════════════════╩═════════╩════════════════════════╝\n");
 }

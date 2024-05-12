@@ -7,3 +7,21 @@ quand une zone est fermée (pendant la partie):
     mettre traitee = 1 à toute la zone
 
 le tableau traitee[5] pour voir si c'est traité
+
+enlever les pions quand une zone est fermée
+
+citer nos sources pour les ascii arts (sur demande de Louetsi)
+
+bugs routes :
+une route en carré s'est fermé avant que je ne la ferme (voir screenshot)
+
+empecher joueur de poser pion s'il les a tous posés
+
+remettre abbaye et melange
+
+liste chainees pour les villes
+
+fonctionnalités manquantes:
+    comptage villes et abbayes fin de parties
+
+    comptage points routes et compatibilité pion route
