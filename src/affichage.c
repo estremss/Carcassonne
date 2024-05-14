@@ -700,11 +700,19 @@ void afficher_joueurs(int nb_joueurs, int nb_tours, struct joueur_s *Joueur)
         if (i != (nb_tours - 1) % nb_joueurs)
         {
             printf(MAG);
-            printf("Joueur %d           \t", i + 1);
+            if (Joueur[i].ia == 0)
+                printf("Joueur %d           \t", i + 1);
+            else
+                printf("IA %d               \t", i + 1);
             printf(RESET);
         }
         else
-            printf(WHT "Joueur %d           \t" RESET, i + 1);
+        {
+            if (Joueur[i].ia == 0)
+                printf(WHT "Joueur %d           \t" RESET, i + 1);
+            else
+                printf(WHT "IA %d               \t" RESET, i + 1);
+        }
     }
     printf("\n");
 
@@ -759,8 +767,9 @@ void affichage(struct tuile_s Grille[143][143], struct tuile_s Pile[72], int nb_
     int coord_max = NB_TUILES + nb_tours, coord_min = NB_TUILES - nb_tours; // pour ne pas recalculer à chaque itération
 
     system("clear");
+    printf("Tour : %d/72\n", nb_tours);
     afficher_joueurs(nb_joueurs, nb_tours, Joueur);
-    //afficher_tuile_en_cours(Pile[nb_tours]);
+    // afficher_tuile_en_cours(Pile[nb_tours]);
     afficher_tuile_en_cours_couleur(Pile[nb_tours]);
 
     // Trouver les max
@@ -826,22 +835,40 @@ void affichage(struct tuile_s Grille[143][143], struct tuile_s Pile[72], int nb_
     }
     printf("\n\n");
 }
-void Affichage_fin(struct joueur_s *Joueurs, int nb_joueurs)
+
+void affichage_fin(struct joueur_s *Joueurs, int nb_joueurs)
 {
-    int i = 2;
-    struct joueur_s classement[5];
-    int max;
-    printf("╔══════════════════════════════════╦═════════╦════════════════════════╗\n");
-    printf("║               Joueurs            ║   Pts   ║       classement       ║\n");
-    printf("╠══════════════════════════════════╬═════════╬════════════════════════╣\n");
+    int i, j;
+    struct joueur_s temp;
     for (i = 0; i < nb_joueurs; i++)
     {
-        if (Joueurs[i].points > max)
-            ;
-
-        printf("║ player %d                        ║    %d   ║           %d            ║\n", i, Joueurs[i].points, classement);
-        printf("╠══════════════════════════════════╬═════════╬════════════════════════╣\n");
+        Joueurs[i].idJoueur = i;
     }
+    for (i = 0; i < nb_joueurs - 1; i++)
+    {
+        for (j = 0; j < nb_joueurs - i - 1; j++)
+        {
+            if (Joueurs[j].points <= Joueurs[j + 1].points)
+            {
+                temp = Joueurs[j];
+                Joueurs[j] = Joueurs[j + 1];
+                Joueurs[j + 1] = temp;
+            }
+        }
+    }
+    printf("\t\t\t\t  _____     _     _                          _                                           \n");
+    printf("\t\t\t\t |_   _|_ _| |__ | | ___  __ _ _   _      __| | ___  ___     ___  ___ ___  _ __ ___  ___ \n");
+    printf("\t\t\t\t   | |/ _` | '_ \\| |/ _ \\/ _` | | | |    / _` |/ _ \\/ __|   / __|/ __/ _ \\| '__/ _ \\/ __|\n");
+    printf("\t\t\t\t   | | (_| | |_) | |  __/ (_| | |_| |   | (_| |  __/\\__ \\   \\__ \\ (_| (_) | | |  __/\\__ \\\n");
+    printf("\t\t\t\t   |_|\\__,_|_.__/|_|\\___|\\__,_|\\__,_|    \\__,_|\\___||___/   |___/\\___\\___/|_|  \\___||___/\n");
+    printf("\t\t\t\t                                                                                         \n");
 
-    printf("╚══════════════════════════════════╩═════════╩════════════════════════╝\n");
+    printf("\t\t\t\t\t╔══════════════════════════════════╦═════════╦════════════════════════╗\n");
+    printf("\t\t\t\t\t║               Joueurs            ║   Pts   ║       Classement       ║\n");
+    for (i = 0; i < nb_joueurs; i++)
+    {
+        printf("\t\t\t\t\t╠══════════════════════════════════╬═════════╬════════════════════════╣\n");
+        printf("\t\t\t\t\t║ Joueur %d                         ║  %3d    ║           %d            ║\n", Joueurs[i].idJoueur + 1, Joueurs[i].points, i + 1);
+    }
+    printf("\t\t\t\t\t╚══════════════════════════════════╩═════════╩════════════════════════╝\n");
 }

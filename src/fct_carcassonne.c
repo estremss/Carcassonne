@@ -2,7 +2,6 @@
 #include <string.h>
 #include <stdlib.h>
 #include <time.h>
-#include "game_structures.h"
 #include "fct_carcassonne.h"
 
 #define NB_TUILES 72
@@ -44,7 +43,7 @@ int deplacer_tuile_en_derniere_position(struct tuile_s *Pile, int nb_tours, stru
 
 void melange(struct tuile_s *Pile)
 {
-    int i, n = 72;
+    int i, n = NB_TUILES;
     struct tuile_s save;
     srand((unsigned int)time(NULL));
 
@@ -58,8 +57,10 @@ void melange(struct tuile_s *Pile)
     }
 }
 
-void parametre_partie(struct tuile_s *Pile, struct tuile_s Grille[143][143], int *nb_joueurs, int *nb_ia)
+void parametre_partie(struct tuile_s *Pile, struct tuile_s Grille[143][143], int *nb_joueurs, int *nb_ia, struct joueur_s *Joueur)
 {
+    int i = 0;
+
     printf("\v\v\v\v\v\tNombre de joueurs : ");
     scanf("%d", nb_joueurs);
     printf("\n\n\tNombre d'IA : ");
@@ -68,8 +69,15 @@ void parametre_partie(struct tuile_s *Pile, struct tuile_s Grille[143][143], int
     if (*nb_joueurs + *nb_ia < 2 || *nb_joueurs + *nb_ia > 5)
     {
         printf("\tLe nombre de joueurs doit être compris entre 2 et 5.\n");
-        parametre_partie(Pile, Grille, nb_joueurs, nb_ia);
+        parametre_partie(Pile, Grille, nb_joueurs, nb_ia, Joueur);
     }
+
+    for (i = 0; i < *nb_joueurs; i++)
+        Joueur[i].ia = 0;
+
+    for (i = *nb_joueurs; i < *nb_joueurs + *nb_ia; i++)
+        Joueur[i].ia = 1;
+
     Grille[NB_TUILES][NB_TUILES] = depiler(Pile, 0);
     melange(Pile); // pour le debug on le laisse en commentaire
 }
@@ -108,19 +116,52 @@ int posable(struct tuile_s Grille[143][143], struct tuile_s T, int h, int b, int
     return cnt_posable;
 }
 
-void poser_tuile(struct tuile_s Grille[143][143], struct tuile_s Pile[72], int *nb_tours, int nb_joueurs, struct joueur_s *Joueur)
+void poser_tuile(struct tuile_s Grille[143][143], struct tuile_s Pile[NB_TUILES], int *nb_tours, int nb_joueurs, struct joueur_s *Joueur, int h, int b, int g, int d)
 {
-    int x, y, i;
+    int x = h, y = g, i = 0, x_tmp, y_tmp;
 
-    printf("Entrez le numéro de la colonne : ");
-    scanf("%d", &y);
-    printf("Entrez le numéro de la ligne : ");
-    scanf("%d", &x);
+    if (Joueur[(*nb_tours - 1) % nb_joueurs].ia == 0)
+    {
+        printf("Entrez le numéro de la colonne : ");
+        scanf("%d", &y);
+        printf("Entrez le numéro de la ligne : ");
+        scanf("%d", &x);
+    }
 
     if (x > 2 * NB_TUILES - 2 || y > 2 * NB_TUILES - 2 || x < 0 || y < 0)
     {
         printf("Coordonnées inexistantes.");
-        interface_joueur(Grille, Pile, nb_tours, nb_joueurs, Joueur);
+        interface_joueur(Grille, Pile, nb_tours, nb_joueurs, Joueur, h, b, g, d);
+    }
+
+    int trouve;
+
+    if (Joueur[(*nb_tours - 1) % nb_joueurs].ia == 1)
+    {
+        for (i = 0; i < 4; i++)
+        {
+            for (x = h - 1; x <= b + 1; x++)
+            {
+                for (y = g - 1; y <= d + 1; y++)
+                {
+                    if (Grille[x][y].jouable == 'O')
+                    {
+                        x_tmp = x;
+                        y_tmp = y;
+                        trouve = 1;
+                        break;
+                    }
+                }
+                if (trouve == 1)
+                    break;
+            }
+            if (trouve == 1)
+                break;
+            rotation(&Pile[*nb_tours]);
+            posable(Grille, Pile[*nb_tours], 1, 140, 1, 140);
+        }
+        x = x_tmp;
+        y = y_tmp;
     }
 
     if (Grille[x][y].jouable == 'O')
@@ -152,25 +193,33 @@ void poser_tuile(struct tuile_s Grille[143][143], struct tuile_s Pile[72], int *
     else
     {
         printf("\nLa tuile n'est pas jouable ici.\n\n");
-        interface_joueur(Grille, Pile, nb_tours, nb_joueurs, Joueur);
+        interface_joueur(Grille, Pile, nb_tours, nb_joueurs, Joueur, h, b, g, d);
     }
 }
 void poser_pion(struct tuile_s Grille[143][143], struct joueur_s *Joueur, int nb_tours, int nb_joueurs, int x, int y)
 {
     int choixPoserPion = -1;
 
-    while (choixPoserPion != 0 && choixPoserPion != 1)
+    if (Joueur[(nb_tours - 1) % nb_joueurs].ia == 0)
     {
-        printf("\nVoulez-vous placer un pion sur la tuile ?\n(oui: 1 - non: 0) : ");
-        scanf("%d", &choixPoserPion);
+        while (choixPoserPion != 0 && choixPoserPion != 1)
+        {
+            printf("\nVoulez-vous placer un pion sur la tuile ?\n(oui: 1 - non: 0) : ");
+            scanf("%d", &choixPoserPion);
+        }
     }
+    else
+        choixPoserPion = 1;
 
     if (choixPoserPion == 1)
     {
-        int position;
+        int position = 0;
 
-        printf("Choisissez le côté où poser le pion :\n\t-0 : Haut\n\t-1 : Droite\n\t-2 : Bas \n\t-3 : Gauche \n\t-4 : Centre\n\t-5 : Annuler\n");
-        scanf("%d", &position);
+        if (Joueur[(nb_tours - 1) % nb_joueurs].ia == 0)
+        {
+            printf("Choisissez le côté où poser le pion :\n\t-0 : Haut\n\t-1 : Droite\n\t-2 : Bas \n\t-3 : Gauche \n\t-4 : Centre\n\t-5 : Annuler\n");
+            scanf("%d", &position);
+        }
 
         if (position == 5)
             return;
@@ -192,9 +241,14 @@ void poser_pion(struct tuile_s Grille[143][143], struct joueur_s *Joueur, int nb
             //     printf("erreur fonction verif route iteratif\n");
             // }
 
-            printf("Le pion n'est pas posable ici.\n\n");
-            printf("Choisissez le côté où poser le pion :\n\t-0 : Haut\n\t-1 : Droite\n\t-2 : Bas \n\t-3 : Gauche \n\t-4 : Centre\n\t-5 : Annuler\n");
-            scanf("%d", &position);
+            if (Joueur[(nb_tours - 1) % nb_joueurs].ia == 0)
+            {
+                printf("Le pion n'est pas posable ici.\n\n");
+                printf("Choisissez le côté où poser le pion :\n\t-0 : Haut\n\t-1 : Droite\n\t-2 : Bas \n\t-3 : Gauche \n\t-4 : Centre\n\t-5 : Annuler\n");
+                scanf("%d", &position);
+            }
+            else
+                position++;
 
             if (position == 5)
                 return;
@@ -671,6 +725,28 @@ void pts_abbaye(struct tuile_s Grille[143][143], int x, int y, struct joueur_s *
     }
 }
 
+void pts_abbaye_FP(struct tuile_s Grille[143][143], int x, int y, struct joueur_s *Joueurs, int nb_tours, int nb_joueurs)
+{ // uniqument en pleine partie
+    if (Grille[x][y].centre == 'a' && Grille[x][y].pion.positionPion == 4 && Grille[x][y].traitee[4] != 0)
+    {
+        for (int i = -1; i <= 1; ++i)
+            for (int j = -1; j <= 1; ++j)
+            {
+                if (i == 0 && j == 0)
+                    continue;
+                if (Grille[x + i][y + i].posee == 1)
+                {
+                    Joueurs[Grille[x][y].pion.idPion].points += 1;
+                }
+            }
+
+        Grille[x][y].traitee[4] = 1;
+        Joueurs[Grille[x][y].pion.idPion].pionsPoses -= 1;
+        Grille[x][y].pion.idPion = -1;
+        Grille[x][y].pion.positionPion = -1;
+    }
+}
+
 void rotation(struct tuile_s *T) // 1 mars
 {
     int i, tmp = T->cotes[3];
@@ -680,7 +756,7 @@ void rotation(struct tuile_s *T) // 1 mars
     T->cotes[0] = tmp;
 }
 
-void interface_joueur(struct tuile_s Grille[143][143], struct tuile_s Pile[72], int *nb_tours, int nb_joueurs, struct joueur_s *Joueur)
+void interface_joueur(struct tuile_s Grille[143][143], struct tuile_s Pile[NB_TUILES], int *nb_tours, int nb_joueurs, struct joueur_s *Joueur, int h, int b, int g, int d)
 {
     int choix;
 
@@ -693,7 +769,7 @@ void interface_joueur(struct tuile_s Grille[143][143], struct tuile_s Pile[72], 
         rotation(&Pile[*nb_tours]);
         break;
     case 2:
-        poser_tuile(Grille, Pile, nb_tours, nb_joueurs, Joueur);
+        poser_tuile(Grille, Pile, nb_tours, nb_joueurs, Joueur, h, b, g, d);
         break;
     default:
         printf("Commande non reconnue.\n");
@@ -711,7 +787,7 @@ void parseur_csv(char *fname, struct tuile_s *Pile)
 
     if (fic != NULL)
     { // on s'assure que la lecture de fichier s'est bien faite
-        for (i = 0; i < 72; i++)
+        for (i = 0; i < NB_TUILES; i++)
         {
             getline(&ligne, &len, fic);
             Pile[i].cotes[0] = strtok(ligne, ",")[0]; // on fait explicitement le premier strtok

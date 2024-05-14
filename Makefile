@@ -16,7 +16,7 @@ all: $(EXEC)
 run: $(EXEC)
 	$(BIN)$<
 
-$(EXEC): moteur_jeu.o fct_carcassonne.o affichage.o
+$(EXEC): moteur_jeu.o fct_carcassonne.o affichage.o ia.o
 	$(CC) $(OBJ)* $(LIBS) -I $(INC) -o $(BIN)$@ -lm
 	
 moteur_jeu.o: $(SRC)moteur_jeu.c
@@ -26,6 +26,9 @@ fct_carcassonne.o: $(SRC)fct_carcassonne.c
 	$(CC) $(CFLAGS) $< -c -I $(INC) -o $(OBJ)$@
 
 affichage.o: $(SRC)affichage.c
+	$(CC) $(CFLAGS) $< -c -I $(INC) -o $(OBJ)$@
+
+ia.o: $(SRC)ia.c
 	$(CC) $(CFLAGS) $< -c -I $(INC) -o $(OBJ)$@
 
 clean:

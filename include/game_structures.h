@@ -20,7 +20,7 @@ struct tuile_s
 
 struct joueur_s
 {
-    int idJoueur, points, pionsPoses, actif;
+    int idJoueur, points, pionsPoses, actif, ia; // ia = 0 : joueur, ia = 1 : ia
 };
 
 struct position

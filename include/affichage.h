@@ -22,5 +22,7 @@ void afficher_joueurs(int, int, struct joueur_s *);
 
 void affichage_menu(void);
 
+void affichage_fin(struct joueur_s *, int);
+
 
 #endif // AFFICHAGE
