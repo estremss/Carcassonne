@@ -1,4 +1,4 @@
-# Projet de Programmation du jeu de société Carcassonne en Langage C Linux)
+# Projet de Programmation du jeu de société Carcassonne en Langage C (Linux)
 
 ### Auteurs : Assalas ARAB ; Evan ESTREMS
 
@@ -13,3 +13,5 @@ Pour compiler le projet dans un terminal Linux :
 3. Utilisez la commande `make` pour compiler le projet
 4. Exécutez le binaire en tapant `./bin/carcassonne`
 5. Adaptez le zoom à votre guise
+
+Note : évitez de poser des pions au centre quand il y a un blason au centre (par soucis d'affichage d'un terminal à l'autre)

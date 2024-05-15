@@ -48,6 +48,7 @@ int main(void)
             poser_tuile(Grille, Pile, &nb_tours, nb_joueurs, Joueurs, h, b, g, d);
         }
     }
+    pts_FP(Grille, Joueurs);
     affichage_fin(Joueurs, nb_joueurs);
 
     return 0;

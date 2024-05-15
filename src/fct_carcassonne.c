@@ -171,22 +171,22 @@ void poser_tuile(struct tuile_s Grille[143][143], struct tuile_s Pile[NB_TUILES]
         if (Joueur[(*nb_tours - 1) % nb_joueurs].pionsPoses < 6)
             poser_pion(Grille, Joueur, *nb_tours, nb_joueurs, x, y);
 
-        pts_abbaye(Grille, x, y, Joueur, *nb_tours, nb_joueurs);
+        // pts_abbaye(Grille, x, y, Joueur, *nb_tours, nb_joueurs);
 
-        if (Grille[x][y].centre != 'r')
-        {
-            for (i = 0; i < 4; i++)
-            {
-                if (Grille[x][y].cotes[i] == 'r')
-                {
-                    pts_route(Grille, x, y, i, Joueur);
-                }
-            }
-        }
-        else
-        {
-            pts_route(Grille, x, y, 4, Joueur);
-        }
+        // if (Grille[x][y].centre != 'r')
+        // {
+        //     for (i = 0; i < 4; i++)
+        //     {
+        //         if (Grille[x][y].cotes[i] == 'r')
+        //         {
+        //             pts_route(Grille, x, y, i, Joueur);
+        //         }
+        //     }
+        // }
+        // else
+        // {
+        //     pts_route(Grille, x, y, 4, Joueur);
+        // }
 
         *nb_tours += 1;
     }
@@ -196,6 +196,7 @@ void poser_tuile(struct tuile_s Grille[143][143], struct tuile_s Pile[NB_TUILES]
         interface_joueur(Grille, Pile, nb_tours, nb_joueurs, Joueur, h, b, g, d);
     }
 }
+
 void poser_pion(struct tuile_s Grille[143][143], struct joueur_s *Joueur, int nb_tours, int nb_joueurs, int x, int y)
 {
     int choixPoserPion = -1;
@@ -209,7 +210,7 @@ void poser_pion(struct tuile_s Grille[143][143], struct joueur_s *Joueur, int nb
         }
     }
     else
-        choixPoserPion = 1;
+        choixPoserPion = rand() % 2;
 
     if (choixPoserPion == 1)
     {
@@ -457,7 +458,7 @@ int verif_route_iteratif(struct tuile_s Grille[143][143], int x, int y, int posi
 void pts_route(struct tuile_s Grille[143][143], int x, int y, int direction, struct joueur_s *Joueurs)
 {
     int t_pion_pose[5] = {0, 0, 0, 0, 0}, i = 0, j, cnt_p = 1, direction1 = 0, direction2, max_pion = 1;
-    struct position P;
+    struct position P, P1, P2;
     struct tuile_s G_Traitees[143][143];
 
     // trouver s'il y a de la route sur au moins un côté
@@ -510,7 +511,7 @@ void pts_route(struct tuile_s Grille[143][143], int x, int y, int direction, str
     if (Grille[x][y].centre != 'r')
     {
         P = T_direction_route(direction, x, y);
-        while (Grille[P.x][P.y].posee == 1)
+        while (Grille[P.x][P.y].posee == 1 && (P.x != x || P.y != y))
         {
             cnt_p += 1;
             // si pion sur le côté d'arrivée
@@ -614,6 +615,8 @@ void pts_route(struct tuile_s Grille[143][143], int x, int y, int direction, str
 
         if (Grille[P.x][P.y].posee == 0)
             return;
+        else
+            P1 = P;
 
         if (P.x != x || P.y != y)
         {
@@ -662,6 +665,9 @@ void pts_route(struct tuile_s Grille[143][143], int x, int y, int direction, str
                 // on détermine la prochaine tuile à parcourir
                 P = T_direction_route(direction1, P.x, P.y);
             }
+            P2 = P;
+            if (P1.x == P2.x && P1.y == P2.y)
+                cnt_p -= 1;
         }
     }
 
@@ -687,6 +693,217 @@ void pts_route(struct tuile_s Grille[143][143], int x, int y, int direction, str
             for (j = 0; j < 143; j++)
                 Grille[i][j] = G_Traitees[i][j];
     }
+}
+
+void pts_route_FP(struct tuile_s Grille[143][143], int x, int y, int direction, struct joueur_s *Joueurs)
+{
+    int t_pion_pose[5] = {0, 0, 0, 0, 0}, i = 0, j, cnt_p = 1, direction1 = 0, direction2, max_pion = 1;
+    struct position P, P1, P2;
+    struct tuile_s G_Traitees[143][143];
+
+    // trouver s'il y a de la route sur au moins un côté
+    while (Grille[x][y].cotes[i] != 'r' && i < 4)
+        i++;
+
+    // arrêter la fonction s'il n'y a pas de route sur la tuile qui vient d'être posée
+    if (i == 4 && Grille[x][y].centre != 'r')
+        return;
+
+    // copie du tableau
+    for (i = 0; i < 143; i++)
+        for (j = 0; j < 143; j++)
+            G_Traitees[i][j] = Grille[i][j];
+
+    // Détection pion sur première tuile (2 directions)
+    if (Grille[x][y].centre == 'r')
+    { // cas où il y a un pion sur la tuile qu'on vient de poser sur les côtés
+        for (i = 0; i < 4; i++)
+            if (Grille[x][y].pion.positionPion == i && Grille[x][y].cotes[i] == 'r')
+            {
+                t_pion_pose[Grille[x][y].pion.idPion] = 1;
+                G_Traitees[x][y].traitee[i] = 1;
+            }
+
+        // cas où il y a un pion sur la tuile qu'on vient de poser sur le centre
+        if (Grille[x][y].pion.positionPion == 4 && Grille[x][y].centre == 'r')
+        {
+            t_pion_pose[Grille[x][y].pion.idPion] = 1;
+            G_Traitees[x][y].traitee[4] = 1;
+        }
+    }
+    // Détections pion sur première tuile (fin de route)
+    else if (Grille[x][y].pion.positionPion == direction)
+    {
+        t_pion_pose[Grille[x][y].pion.idPion] = 1;
+        G_Traitees[x][y].traitee[4] = 1;
+    }
+
+    // DEBUT PARCOURS
+
+    // PARCOURS 1 direction
+    // si la tuile qui vient d'être posée est une fin de route
+    if (Grille[x][y].centre != 'r')
+    {
+        P = T_direction_route(direction, x, y);
+        while (Grille[P.x][P.y].posee == 1 && (P.x != x || P.y != y))
+        {
+            cnt_p += 1;
+            // si pion sur le côté d'arrivée
+            if (Grille[P.x][P.y].pion.positionPion == P.pere)
+            {
+                t_pion_pose[Grille[P.x][P.y].pion.idPion] += 1;
+                G_Traitees[P.x][P.y].traitee[P.pere] = 1;
+            }
+
+            // si pion sur centre
+            if (Grille[P.x][P.y].centre == 'r' && Grille[P.x][P.y].pion.positionPion == 4)
+            {
+                t_pion_pose[Grille[P.x][P.y].pion.idPion] += 1;
+                G_Traitees[P.x][P.y].traitee[4] = 1;
+            }
+
+            // si ce n'est pas une fin de route
+            if (Grille[P.x][P.y].centre == 'r')
+            {
+                direction = (P.pere + 1) % 4;
+                while (Grille[P.x][P.y].cotes[direction] != 'r')
+                    direction = (direction + 1) % 4;
+
+                if (Grille[P.x][P.y].pion.positionPion == direction)
+                {
+                    t_pion_pose[Grille[P.x][P.y].pion.idPion] += 1;
+                    G_Traitees[P.x][P.y].traitee[direction] = 1;
+                }
+            }
+            // si c'est une fin de route on break
+            else
+                break;
+
+            // on détermine la prochaine tuile à parcourir
+            P = T_direction_route(direction, P.x, P.y);
+        }
+    }
+
+    // PARCOURS 2 directions
+    // si ce n'est pas une fin de route
+    else
+    {
+        while (Grille[x][y].cotes[direction1] != 'r')
+            direction1++;
+
+        direction2 = direction1 + 1;
+        while (Grille[x][y].cotes[direction2] != 'r')
+            direction2++;
+
+        P = T_direction_route(direction1, x, y);
+
+        while (Grille[P.x][P.y].posee == 1 && (P.x != x || P.y != y))
+        {
+            cnt_p += 1;
+            // si pion sur le côté d'arrivée
+            if (Grille[P.x][P.y].pion.positionPion == P.pere)
+            {
+                t_pion_pose[Grille[P.x][P.y].pion.idPion] += 1;
+                G_Traitees[P.x][P.y].traitee[P.pere] = 1;
+            }
+
+            // si pion sur centre
+            if (Grille[P.x][P.y].centre == 'r' && Grille[P.x][P.y].pion.positionPion == 4)
+            {
+                t_pion_pose[Grille[P.x][P.y].pion.idPion] += 1;
+                G_Traitees[P.x][P.y].traitee[4] = 1;
+            }
+
+            // si ce n'est pas une fin de route
+            if (Grille[P.x][P.y].centre == 'r')
+            {
+                direction1 = (P.pere + 1) % 4;
+                while (Grille[P.x][P.y].cotes[direction1] != 'r')
+                    direction1 = (direction1 + 1) % 4;
+
+                if (Grille[P.x][P.y].pion.positionPion == direction1)
+                {
+                    t_pion_pose[Grille[P.x][P.y].pion.idPion] += 1;
+                    G_Traitees[P.x][P.y].traitee[direction1] = 1;
+                }
+            }
+            // si c'est une fin de route on break
+            else
+                break;
+
+            // on détermine la prochaine tuile à parcourir
+            P = T_direction_route(direction1, P.x, P.y);
+        }
+
+        P1 = P;
+
+        if (P.x != x || P.y != y)
+        {
+            P = T_direction_route(direction2, x, y);
+
+            while (Grille[P.x][P.y].posee == 1 && (P.x != x || P.y != y))
+            {
+                cnt_p += 1;
+                // si pion sur le côté d'arrivée
+                if (Grille[P.x][P.y].pion.positionPion == P.pere)
+                {
+                    t_pion_pose[Grille[P.x][P.y].pion.idPion] += 1;
+                    G_Traitees[P.x][P.y].traitee[P.pere] = 1;
+                }
+
+                // si pion sur centre
+                if (Grille[P.x][P.y].centre == 'r' && Grille[P.x][P.y].pion.positionPion == 4)
+                {
+                    t_pion_pose[Grille[P.x][P.y].pion.idPion] += 1;
+                    G_Traitees[P.x][P.y].traitee[4] = 1;
+                }
+
+                // si ce n'est pas une fin de route
+                if (Grille[P.x][P.y].centre == 'r')
+                {
+                    direction1 = (P.pere + 1) % 4;
+                    while (Grille[P.x][P.y].cotes[direction1] != 'r')
+                        direction1 = (direction1 + 1) % 4;
+
+                    if (Grille[P.x][P.y].pion.positionPion == direction1)
+                    {
+                        t_pion_pose[Grille[P.x][P.y].pion.idPion] += 1;
+                        G_Traitees[P.x][P.y].traitee[direction1] = 1;
+                    }
+                }
+                // si c'est une fin de route on break
+                else
+                    break;
+
+                // on détermine la prochaine tuile à parcourir
+                P = T_direction_route(direction1, P.x, P.y);
+            }
+            P2 = P;
+            if (P1.x == P2.x && P1.y == P2.y)
+                cnt_p -= 1;
+        }
+    }
+
+    // cas où la dernière tuile est posee (donc fin de route)
+
+    // for (i = 0; i < 5; i++)
+    //     printf("J%d : %d\t", i + 1, t_pion_pose[i]);
+
+    for (i = 0; i < 5; i++)
+        if (t_pion_pose[i] >= max_pion)
+            max_pion = t_pion_pose[i];
+
+    for (i = 0; i < 5; i++)
+    {
+        if (t_pion_pose[i] == max_pion)
+            Joueurs[i].points += cnt_p;
+
+        Joueurs[i].pionsPoses -= t_pion_pose[i];
+    }
+
+    for (i = 0; i < 143; i++)
+        for (j = 0; j < 143; j++)
+            Grille[i][j] = G_Traitees[i][j];
 }
 
 void pts_abbaye(struct tuile_s Grille[143][143], int x, int y, struct joueur_s *Joueurs, int nb_tours, int nb_joueurs)
@@ -725,26 +942,53 @@ void pts_abbaye(struct tuile_s Grille[143][143], int x, int y, struct joueur_s *
     }
 }
 
-void pts_abbaye_FP(struct tuile_s Grille[143][143], int x, int y, struct joueur_s *Joueurs, int nb_tours, int nb_joueurs)
+void pts_abbaye_FP(struct tuile_s Grille[143][143], int x, int y, struct joueur_s *Joueurs)
 { // uniqument en pleine partie
-    if (Grille[x][y].centre == 'a' && Grille[x][y].pion.positionPion == 4 && Grille[x][y].traitee[4] != 0)
+    int i, j;
+
+    if (Grille[x][y].centre == 'a' && Grille[x][y].pion.positionPion == 4)
     {
-        for (int i = -1; i <= 1; ++i)
-            for (int j = -1; j <= 1; ++j)
+        for (i = -1; i <= 1; i++)
+            for (j = -1; j <= 1; j++)
             {
                 if (i == 0 && j == 0)
                     continue;
-                if (Grille[x + i][y + i].posee == 1)
+                if (Grille[x + i][y + j].posee == 1)
                 {
                     Joueurs[Grille[x][y].pion.idPion].points += 1;
                 }
             }
 
-        Grille[x][y].traitee[4] = 1;
-        Joueurs[Grille[x][y].pion.idPion].pionsPoses -= 1;
-        Grille[x][y].pion.idPion = -1;
-        Grille[x][y].pion.positionPion = -1;
+        // Joueurs[Grille[x][y].pion.idPion].pionsPoses -= 1;
+        // Grille[x][y].pion.idPion = -1;
+        // Grille[x][y].pion.positionPion = -1;
     }
+}
+
+void pts_FP(struct tuile_s Grille[143][143], struct joueur_s *Joueurs)
+{
+    int i, j, k;
+    for (i = 0; i < 143; ++i)
+        for (j = 0; j < 143; ++j)
+        {
+            if (Grille[i][j].centre == 'a' && Grille[i][j].pion.positionPion == 4)
+            {
+                // pts_abbaye_FP(Grille, i, j, Joueurs);
+            }
+            if (((i > 0 && j > 0) && (i < 141 && j < 142)) && (Grille[i][j].cotes[0] == 'r' || Grille[i][j].cotes[1] == 'r' || Grille[i][j].cotes[2] == 'r' || Grille[i][j].cotes[3] == 'r' || Grille[i][j].centre == 'r') && Grille[i][j].pion.positionPion != -1)
+            {
+                if (Grille[i][j].centre != 'r')
+                {
+                    for (k = 0; k < 4; k++)
+                    {
+                        if (Grille[i][j].cotes[k] == 'r' && Grille[i][j].traitee[k] == 0)
+                            pts_route_FP(Grille, i, j, k, Joueurs);
+                    }
+                }
+                else
+                    pts_route_FP(Grille, i, j, 4, Joueurs);
+            }
+        }
 }
 
 void rotation(struct tuile_s *T) // 1 mars

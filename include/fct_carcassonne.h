@@ -28,10 +28,14 @@ int verif_route_iteratif(struct tuile_s[143][143], int, int, int);
 
 void pts_route(struct tuile_s[143][143], int, int, int, struct joueur_s *);
 
+void pts_route_FP(struct tuile_s[143][143], int, int, int, struct joueur_s *);
+
 void pts_abbaye(struct tuile_s[143][143], int, int, struct joueur_s *, int, int);
 
-void pts_abbaye_FP(struct tuile_s[143][143], int, int, struct joueur_s *, int, int);
+void pts_abbaye_FP(struct tuile_s[143][143], int, int, struct joueur_s *);
 
 struct position T_direction_route(int, int, int);
+
+void pts_FP(struct tuile_s[143][143], struct joueur_s *);
 
 #endif // FCT_CARCASSONNE
