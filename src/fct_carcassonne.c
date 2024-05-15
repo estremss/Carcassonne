@@ -171,22 +171,22 @@ void poser_tuile(struct tuile_s Grille[143][143], struct tuile_s Pile[NB_TUILES]
         if (Joueur[(*nb_tours - 1) % nb_joueurs].pionsPoses < 6)
             poser_pion(Grille, Joueur, *nb_tours, nb_joueurs, x, y);
 
-        // pts_abbaye(Grille, x, y, Joueur, *nb_tours, nb_joueurs);
+        pts_abbaye(Grille, x, y, Joueur, *nb_tours, nb_joueurs);
 
-        // if (Grille[x][y].centre != 'r')
-        // {
-        //     for (i = 0; i < 4; i++)
-        //     {
-        //         if (Grille[x][y].cotes[i] == 'r')
-        //         {
-        //             pts_route(Grille, x, y, i, Joueur);
-        //         }
-        //     }
-        // }
-        // else
-        // {
-        //     pts_route(Grille, x, y, 4, Joueur);
-        // }
+        if (Grille[x][y].centre != 'r')
+        {
+            for (i = 0; i < 4; i++)
+            {
+                if (Grille[x][y].cotes[i] == 'r')
+                {
+                    pts_route(Grille, x, y, i, Joueur);
+                }
+            }
+        }
+        else
+        {
+            pts_route(Grille, x, y, 4, Joueur);
+        }
 
         *nb_tours += 1;
     }
@@ -721,22 +721,22 @@ void pts_route_FP(struct tuile_s Grille[143][143], int x, int y, int direction, 
             if (Grille[x][y].pion.positionPion == i && Grille[x][y].cotes[i] == 'r')
             {
                 t_pion_pose[Grille[x][y].pion.idPion] = 1;
-                G_Traitees[x][y].traitee[i] = 1;
             }
+        G_Traitees[x][y].traitee[i] = 1;
 
         // cas où il y a un pion sur la tuile qu'on vient de poser sur le centre
         if (Grille[x][y].pion.positionPion == 4 && Grille[x][y].centre == 'r')
         {
             t_pion_pose[Grille[x][y].pion.idPion] = 1;
-            G_Traitees[x][y].traitee[4] = 1;
         }
+        G_Traitees[x][y].traitee[4] = 1;
     }
     // Détections pion sur première tuile (fin de route)
     else if (Grille[x][y].pion.positionPion == direction)
     {
         t_pion_pose[Grille[x][y].pion.idPion] = 1;
-        G_Traitees[x][y].traitee[4] = 1;
     }
+    G_Traitees[x][y].traitee[4] = 1;
 
     // DEBUT PARCOURS
 
@@ -752,15 +752,15 @@ void pts_route_FP(struct tuile_s Grille[143][143], int x, int y, int direction, 
             if (Grille[P.x][P.y].pion.positionPion == P.pere)
             {
                 t_pion_pose[Grille[P.x][P.y].pion.idPion] += 1;
-                G_Traitees[P.x][P.y].traitee[P.pere] = 1;
             }
+            G_Traitees[P.x][P.y].traitee[P.pere] = 1;
 
             // si pion sur centre
             if (Grille[P.x][P.y].centre == 'r' && Grille[P.x][P.y].pion.positionPion == 4)
             {
                 t_pion_pose[Grille[P.x][P.y].pion.idPion] += 1;
-                G_Traitees[P.x][P.y].traitee[4] = 1;
             }
+            G_Traitees[P.x][P.y].traitee[4] = 1;
 
             // si ce n'est pas une fin de route
             if (Grille[P.x][P.y].centre == 'r')
@@ -772,8 +772,8 @@ void pts_route_FP(struct tuile_s Grille[143][143], int x, int y, int direction, 
                 if (Grille[P.x][P.y].pion.positionPion == direction)
                 {
                     t_pion_pose[Grille[P.x][P.y].pion.idPion] += 1;
-                    G_Traitees[P.x][P.y].traitee[direction] = 1;
                 }
+                G_Traitees[P.x][P.y].traitee[direction] = 1;
             }
             // si c'est une fin de route on break
             else
@@ -804,15 +804,15 @@ void pts_route_FP(struct tuile_s Grille[143][143], int x, int y, int direction, 
             if (Grille[P.x][P.y].pion.positionPion == P.pere)
             {
                 t_pion_pose[Grille[P.x][P.y].pion.idPion] += 1;
-                G_Traitees[P.x][P.y].traitee[P.pere] = 1;
             }
+            G_Traitees[P.x][P.y].traitee[P.pere] = 1;
 
             // si pion sur centre
             if (Grille[P.x][P.y].centre == 'r' && Grille[P.x][P.y].pion.positionPion == 4)
             {
                 t_pion_pose[Grille[P.x][P.y].pion.idPion] += 1;
-                G_Traitees[P.x][P.y].traitee[4] = 1;
             }
+            G_Traitees[P.x][P.y].traitee[4] = 1;
 
             // si ce n'est pas une fin de route
             if (Grille[P.x][P.y].centre == 'r')
@@ -824,8 +824,8 @@ void pts_route_FP(struct tuile_s Grille[143][143], int x, int y, int direction, 
                 if (Grille[P.x][P.y].pion.positionPion == direction1)
                 {
                     t_pion_pose[Grille[P.x][P.y].pion.idPion] += 1;
-                    G_Traitees[P.x][P.y].traitee[direction1] = 1;
                 }
+                G_Traitees[P.x][P.y].traitee[direction1] = 1;
             }
             // si c'est une fin de route on break
             else
@@ -848,15 +848,15 @@ void pts_route_FP(struct tuile_s Grille[143][143], int x, int y, int direction, 
                 if (Grille[P.x][P.y].pion.positionPion == P.pere)
                 {
                     t_pion_pose[Grille[P.x][P.y].pion.idPion] += 1;
-                    G_Traitees[P.x][P.y].traitee[P.pere] = 1;
                 }
+                G_Traitees[P.x][P.y].traitee[P.pere] = 1;
 
                 // si pion sur centre
                 if (Grille[P.x][P.y].centre == 'r' && Grille[P.x][P.y].pion.positionPion == 4)
                 {
                     t_pion_pose[Grille[P.x][P.y].pion.idPion] += 1;
-                    G_Traitees[P.x][P.y].traitee[4] = 1;
                 }
+                G_Traitees[P.x][P.y].traitee[4] = 1;
 
                 // si ce n'est pas une fin de route
                 if (Grille[P.x][P.y].centre == 'r')
@@ -868,8 +868,8 @@ void pts_route_FP(struct tuile_s Grille[143][143], int x, int y, int direction, 
                     if (Grille[P.x][P.y].pion.positionPion == direction1)
                     {
                         t_pion_pose[Grille[P.x][P.y].pion.idPion] += 1;
-                        G_Traitees[P.x][P.y].traitee[direction1] = 1;
                     }
+                    G_Traitees[P.x][P.y].traitee[direction1] = 1;
                 }
                 // si c'est une fin de route on break
                 else
@@ -884,10 +884,10 @@ void pts_route_FP(struct tuile_s Grille[143][143], int x, int y, int direction, 
         }
     }
 
-    // cas où la dernière tuile est posee (donc fin de route)
-
+    // printf("appel x : %d y : %d\t", x, y);
     // for (i = 0; i < 5; i++)
     //     printf("J%d : %d\t", i + 1, t_pion_pose[i]);
+    // printf("\n");
 
     for (i = 0; i < 5; i++)
         if (t_pion_pose[i] >= max_pion)
@@ -958,10 +958,6 @@ void pts_abbaye_FP(struct tuile_s Grille[143][143], int x, int y, struct joueur_
                     Joueurs[Grille[x][y].pion.idPion].points += 1;
                 }
             }
-
-        // Joueurs[Grille[x][y].pion.idPion].pionsPoses -= 1;
-        // Grille[x][y].pion.idPion = -1;
-        // Grille[x][y].pion.positionPion = -1;
     }
 }
 
@@ -973,7 +969,7 @@ void pts_FP(struct tuile_s Grille[143][143], struct joueur_s *Joueurs)
         {
             if (Grille[i][j].centre == 'a' && Grille[i][j].pion.positionPion == 4)
             {
-                // pts_abbaye_FP(Grille, i, j, Joueurs);
+                pts_abbaye_FP(Grille, i, j, Joueurs);
             }
             if (((i > 0 && j > 0) && (i < 141 && j < 142)) && (Grille[i][j].cotes[0] == 'r' || Grille[i][j].cotes[1] == 'r' || Grille[i][j].cotes[2] == 'r' || Grille[i][j].cotes[3] == 'r' || Grille[i][j].centre == 'r') && Grille[i][j].pion.positionPion != -1)
             {
@@ -985,7 +981,7 @@ void pts_FP(struct tuile_s Grille[143][143], struct joueur_s *Joueurs)
                             pts_route_FP(Grille, i, j, k, Joueurs);
                     }
                 }
-                else
+                else if (Grille[i][j].traitee[4] == 0)
                     pts_route_FP(Grille, i, j, 4, Joueurs);
             }
         }
