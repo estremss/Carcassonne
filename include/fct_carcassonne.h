@@ -53,4 +53,7 @@ struct position T_direction_route(int, int, int);
 // Encapsule les fonctions de comptage de points de fin de partie et fait les appels dans certains cas
 void pts_FP(struct tuile_s[143][143], struct joueur_s *);
 
+// Compte les points des villes récursivement
+int pts_ville(struct tuile_s[143][143], int, int, struct joueur_s *, int, int);
+
 #endif // FCT_CARCASSONNE
