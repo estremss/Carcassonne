@@ -15,9 +15,8 @@ Pour compiler le projet dans un terminal Linux :
 4. Exécutez le binaire en tapant `./bin/carcassonne`
 5. Adaptez le zoom à votre guise
 
-Note : évitez de poser des pions au centre quand il y a un blason au centre (par soucis d'affichage d'un terminal à l'autre)
+**Note :** évitez de poser des pions au centre quand il y a un blason au centre (par soucis d'affichage d'un terminal à l'autre)
 
-Source des ASCII ARTS :
-
+Source des ASCII ARTS :  
 [patorjk.com](https://patorjk.com/software/taag/#p=display&f=Graffiti&t=Type%20Something%20)  
 [asciiart.eu](https://www.asciiart.eu/buildings-and-places/castles)
