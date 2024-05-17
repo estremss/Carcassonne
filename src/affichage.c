@@ -792,8 +792,6 @@ void affichage(struct tuile_s Grille[143][143], struct tuile_s Pile[72], int nb_
         }
     }
 
-    // deplacer_tuile_en_derniere_position(Pile, nb_tours, Grille, &Pile[nb_tours], *h, *b, *g, *d);
-
     posable(Grille, Pile[nb_tours], *h, *b, *g, *d);
 
     // Affichage (on laisse une marge de 1 dans les coins)

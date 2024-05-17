@@ -9,18 +9,17 @@ struct pion_s
 
 struct tuile_s
 {
-    int id;
     char cotes[4];
     char centre;
     int traitee[5]; // état de traitement du cote[i]
-    int posee; // 1 si posée, 0 sinon
+    int posee;      // 1 si posée, 0 sinon
     struct pion_s pion;
     char jouable;
 };
 
 struct joueur_s
 {
-    int idJoueur, points, pionsPoses, actif, ia; // ia = 0 : joueur, ia = 1 : ia
+    int idJoueur, points, pionsPoses, ia; // ia = 0 : joueur, ia = 1 : ia
 };
 
 struct position

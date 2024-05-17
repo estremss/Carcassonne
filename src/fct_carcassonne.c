@@ -35,7 +35,6 @@ int deplacer_tuile_en_derniere_position(struct tuile_s *Pile, int nb_tours, stru
             Pile[i] = Pile[i + 1];
         }
         Pile[NB_TUILES - 1] = save;
-        // deplacer_tuile_en_derniere_position(Pile, nb_tours, Grille, h, b, g, d);
     }
 
     return cnt_posable;
@@ -79,12 +78,11 @@ void parametre_partie(struct tuile_s *Pile, struct tuile_s Grille[143][143], int
         Joueur[i].ia = 1;
 
     Grille[NB_TUILES][NB_TUILES] = depiler(Pile, 0);
-    melange(Pile); // pour le debug on le laisse en commentaire
+    melange(Pile);
 }
 
 int posable(struct tuile_s Grille[143][143], struct tuile_s T, int h, int b, int g, int d) // 1 mars
-{                                                                                          // return le nb d'endroit où la tuile est posable                                                                                           // on n'a pas testé la fonction
-    // à confirmer si pour 'jouable' on doit utiliser des pointeurs ou pas
+{
     int i, j, cnt_posable = 0;
     for (i = h - 1; i <= b + 1; i++)
     {
@@ -261,98 +259,6 @@ void poser_pion(struct tuile_s Grille[143][143], struct joueur_s *Joueur, int nb
     }
 }
 
-int verif_route(struct tuile_s Grille[143][143], int x, int y, int papa, int i, int j)
-{ // return 0 si on peut poser le pion, -1 sinon
-    // on peut mettre 4 dans "papa" par défaut
-
-    // i et j sont la sauvegarde des premiers x et y, ils ne changent pas dans les appels, dans le premier appel ils doivent être égaux à x et y
-    // papa est le coté de la tuile précédente qui est connecté à la route de la tuile actuelle
-    // etat est la variable qui se transmet d'appel en appel qui indique si on est tombé sur un pion ou pas, 0 si on est pas tombé sur un pion, 1 dans l'autre cas
-    printf("%d,%d", x, y);
-    if (etat_verif_route == 0)
-    {
-
-        // Conditions d'arrêt 1 : si pion posé sur route
-        if (Grille[x][y].pion.idPion != -1)
-        {
-
-            if (Grille[x][y].pion.positionPion <= 3 && Grille[x][y].cotes[Grille[x][y].pion.positionPion] == 'r')
-            {
-                etat_verif_route = 1;
-                printf("erreur type pion coté");
-                return -1;
-            }
-            else
-            {
-                if ((Grille[x][y].pion.positionPion == 4 && Grille[x][y].centre == 'r'))
-                {
-                    etat_verif_route = 1;
-                    printf("erreur type pion centre");
-                    return -1;
-                }
-            }
-        }
-        // Condition d'arrêt 2 : si fin de route OU tuile absente
-        else if (Grille[x][y].centre != 'r')
-            return 0;
-
-        // Traitement : on regarde à quel endroit part la route en s'assurant que ce ne soit pas l'endroit d'où elle vient
-
-        if (Grille[x][y].cotes[0] == 'r' && papa != 2)
-        {
-            papa = 0;
-            if (etat_verif_route == 0)
-                verif_route(Grille, x - 1, y, papa, i, j);
-            else
-            {
-                printf("erreur type 1");
-                return -1;
-            }
-        }
-        if (Grille[x][y].cotes[1] == 'r' && papa != 3)
-        {
-            papa = 1;
-            if (etat_verif_route == 0)
-                verif_route(Grille, x, y + 1, papa, i, j);
-            else
-            {
-                printf("erreur type 2");
-                return -1;
-            }
-        }
-        if (Grille[x][y].cotes[2] == 'r' && papa != 0)
-        {
-            papa = 2;
-            if (etat_verif_route == 0)
-                verif_route(Grille, x + 1, y, papa, i, j);
-            else
-            {
-                printf("erreur type 3");
-                return -1;
-            }
-        }
-        if (Grille[x][y].cotes[3] == 'r' && papa != 1)
-        {
-            papa = 3;
-            if (etat_verif_route == 0)
-                verif_route(Grille, x, y - 1, papa, i, j);
-            else
-            {
-                printf("erreur type 4");
-                return -1;
-            }
-        }
-    }
-
-    else
-    {
-        printf("erreur type etat");
-        return -1;
-    }
-
-    return 0;
-}
-
 struct position T_direction_route(int cote, int i, int j)
 {
     struct position P = {0, 0, 0};
@@ -386,7 +292,7 @@ struct position T_direction_route(int cote, int i, int j)
 }
 
 int verif_route_iteratif(struct tuile_s Grille[143][143], int x, int y, int position_pion)
-{ // return 0 si c'est bon et -1 sinon
+{
     struct position P;
     int direction_route = 0, direction_route2 = -1;
 
@@ -425,7 +331,7 @@ int verif_route_iteratif(struct tuile_s Grille[143][143], int x, int y, int posi
         P = T_direction_route(direction_route, P.x, P.y); // on peut continuer le traitement et donner la prochaine tuile à P
     }
 
-    if (P.y == x && P.y == y) // si on a fait une boucle
+    if (P.y == x && P.y == y) // si on a fait une boucle et qu'on revient à la tuile de départ
         return 0;
 
     // si la route a deux directions
@@ -613,7 +519,7 @@ void pts_route(struct tuile_s Grille[143][143], int x, int y, int direction, str
             P = T_direction_route(direction1, P.x, P.y);
         }
 
-        if (Grille[P.x][P.y].posee == 0)
+        if (Grille[P.x][P.y].posee == 0) // si on est sur une tuile non posée, c'est que la route n'est pas fermée donc on stop le traitement
             return;
         else
             P1 = P;
@@ -666,7 +572,7 @@ void pts_route(struct tuile_s Grille[143][143], int x, int y, int direction, str
                 P = T_direction_route(direction1, P.x, P.y);
             }
             P2 = P;
-            if (P1.x == P2.x && P1.y == P2.y)
+            if (P1.x == P2.x && P1.y == P2.y) // Pour ne pas compter deux fois si notre ville est une boucle (dans un certain cas)
                 cnt_p -= 1;
         }
     }
@@ -674,6 +580,7 @@ void pts_route(struct tuile_s Grille[143][143], int x, int y, int direction, str
     // cas où la dernière tuile est posee (donc fin de route)
     if (Grille[P.x][P.y].posee == 1)
     {
+        // DEBUG
         // for (i = 0; i < 5; i++)
         //     printf("J%d : %d\t", i + 1, t_pion_pose[i]);
 
@@ -906,6 +813,81 @@ void pts_route_FP(struct tuile_s Grille[143][143], int x, int y, int direction, 
             Grille[i][j] = G_Traitees[i][j];
 }
 
+int pts_ville(struct tuile_s Grille[143][143], int x, int y, struct joueur_s *Joueurs, int nb_tours, int nb_joueurs)
+{
+    int valide = 0, i, j;
+    struct tuile_s G_Traitees[143][143];
+    struct position chemin[4] = {
+        {.x = x - 1, .y = y, .pere = 2},
+        {.x = x, .y = y + 1, .pere = 3},
+        {.x = x + 1, .y = y, .pere = 0},
+        {.x = y, .y = y - 1, .pere = 1}};
+
+    // copie du tableau
+    for (i = 0; i < 143; i++)
+        for (j = 0; j < 143; j++)
+            G_Traitees[i][j] = Grille[i][j];
+
+    // Début du traitement
+    if (Grille[x][y].centre == 'v' || Grille[x][y].centre == 'b')
+    {
+        if (Grille[x][y].centre == 'v') // dans le cas ou c'est un ville avec ville au milieu
+        {
+            for (i = 0; i < 4; i++)
+                if (Grille[x][y].cotes[i] == 'v' && (Grille[chemin[i].x][chemin[i].y].posee == 1))
+                {
+                    if (G_Traitees[x][y].traitee[i] != 1)
+                    {
+                        G_Traitees[x][y].traitee[i] = 1;
+                        G_Traitees[x][y].pion.idPion = -1;
+                        G_Traitees[x][y].pion.positionPion = -1;
+                        valide = (valide + 2) * pts_ville(Grille, chemin[i].x, chemin[i].y, Joueurs, nb_tours, nb_joueurs);
+                    }
+                }
+                else
+                    return 0;
+
+            return 1;
+        }
+        else
+        {
+            if (Grille[x][y].centre == 'b')
+            {
+                for (i = 0; i < 4; i++)
+                    if (Grille[x][y].cotes[i] == 'b' && (Grille[chemin[i].x][chemin[i].y].posee == 1))
+                    {
+                        if (G_Traitees[x][y].traitee[i] != 1)
+                        {
+                            G_Traitees[x][y].traitee[i] = 1;
+                            G_Traitees[x][y].pion.idPion = -1;
+                            G_Traitees[x][y].pion.positionPion = -1;
+                            valide = (valide + 4) * (pts_ville(Grille, chemin[i].x, chemin[i].y, Joueurs, nb_tours, nb_joueurs));
+                        }
+                    }
+                    else
+                        return 0;
+                return 1;
+            }
+        }
+    }
+    else
+    {
+        for (i = 0; i < 4; i++)
+        {
+            if (Grille[x][y].cotes[i] == 'v' || Grille[x][y].cotes[i] == 'b')
+            {
+                if (Grille[x][y].cotes[i] == 'v' && G_Traitees[x][y].traitee[1] != 1)
+                {
+                    G_Traitees[x][y].traitee[i] = 1;
+                    valide = (valide + 2) * (pts_ville(Grille, chemin[i].x, chemin[i].y, Joueurs, nb_tours, nb_joueurs));
+                    return 1;
+                }
+            }
+        }
+    }
+    return 0;
+}
+
 void pts_abbaye(struct tuile_s Grille[143][143], int x, int y, struct joueur_s *Joueurs, int nb_tours, int nb_joueurs)
 { // uniqument en pleine partie
     if (Grille[x][y].centre == 'a' && Grille[x][y].pion.positionPion == 4)
@@ -943,7 +925,7 @@ void pts_abbaye(struct tuile_s Grille[143][143], int x, int y, struct joueur_s *
 }
 
 void pts_abbaye_FP(struct tuile_s Grille[143][143], int x, int y, struct joueur_s *Joueurs)
-{ // uniqument en pleine partie
+{ // uniqument en fin de partie
     int i, j;
 
     if (Grille[x][y].centre == 'a' && Grille[x][y].pion.positionPion == 4)
@@ -998,7 +980,7 @@ void rotation(struct tuile_s *T) // 1 mars
 
 void interface_joueur(struct tuile_s Grille[143][143], struct tuile_s Pile[NB_TUILES], int *nb_tours, int nb_joueurs, struct joueur_s *Joueur, int h, int b, int g, int d)
 {
-    int choix;
+    int choix = -1;
 
     printf("Indiquez le numéro de l'action que vous souhaitez effectuer.\n\n\t1) Rotation de 90° dans le sens horaire\n\t2) Poser une tuile\n\n");
     scanf("%d", &choix);
