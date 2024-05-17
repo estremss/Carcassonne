@@ -19,5 +19,5 @@ Note : évitez de poser des pions au centre quand il y a un blason au centre (pa
 
 Source des ASCII ARTS :
 
-[patorjk.com](https://patorjk.com/software/taag/#p=display&f=Graffiti&t=Type%20Something%20)
+[patorjk.com](https://patorjk.com/software/taag/#p=display&f=Graffiti&t=Type%20Something%20)  
 [asciiart.eu](https://www.asciiart.eu/buildings-and-places/castles)
