@@ -15,6 +15,7 @@ struct tuile_s
     int posee;      // 1 si posée, 0 sinon
     struct pion_s pion;
     char jouable;
+    int visitee;
 };
 
 struct joueur_s

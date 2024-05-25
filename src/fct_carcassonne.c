@@ -186,6 +186,16 @@ void poser_tuile(struct tuile_s Grille[143][143], struct tuile_s Pile[NB_TUILES]
             pts_route(Grille, x, y, 4, Joueur);
         }
 
+        if (Grille[x][y].centre == 'v' || Grille[x][y].centre == 'b')
+            pts_ville(Grille, Joueur, x, y, *nb_tours, nb_joueurs);
+
+        else
+        {
+            for (i = 0; i < 4; i++)
+                if (Grille[x][y].cotes[i] == 'v' || Grille[x][y].cotes[i] == 'b')
+                    pts_ville(Grille, Joueur, x, y, *nb_tours, nb_joueurs);
+        }
+
         *nb_tours += 1;
     }
     else
@@ -813,79 +823,152 @@ void pts_route_FP(struct tuile_s Grille[143][143], int x, int y, int direction, 
             Grille[i][j] = G_Traitees[i][j];
 }
 
-int pts_ville(struct tuile_s Grille[143][143], int x, int y, struct joueur_s *Joueurs, int nb_tours, int nb_joueurs)
+void pts_ville(struct tuile_s Grille[143][143], struct joueur_s *Joueurs, int x, int y, int nb_tours, int nb_joueurs)
 {
-    int valide = 0, i, j;
+    int i, j, max_pion = 1;
     struct tuile_s G_Traitees[143][143];
-    struct position chemin[4] = {
-        {.x = x - 1, .y = y, .pere = 2},
-        {.x = x, .y = y + 1, .pere = 3},
-        {.x = x + 1, .y = y, .pere = 0},
-        {.x = y, .y = y - 1, .pere = 1}};
+    int valide = 0;
+    int pions_ville[5] = {0, 0, 0, 0, 0};
 
     // copie du tableau
     for (i = 0; i < 143; i++)
         for (j = 0; j < 143; j++)
             G_Traitees[i][j] = Grille[i][j];
 
-    // Début du traitement
-    if (Grille[x][y].centre == 'v' || Grille[x][y].centre == 'b')
-    {
-        if (Grille[x][y].centre == 'v') // dans le cas ou c'est un ville avec ville au milieu
-        {
-            for (i = 0; i < 4; i++)
-                if (Grille[x][y].cotes[i] == 'v' && (Grille[chemin[i].x][chemin[i].y].posee == 1))
-                {
-                    if (G_Traitees[x][y].traitee[i] != 1)
-                    {
-                        G_Traitees[x][y].traitee[i] = 1;
-                        G_Traitees[x][y].pion.idPion = -1;
-                        G_Traitees[x][y].pion.positionPion = -1;
-                        valide = (valide + 2) * pts_ville(Grille, chemin[i].x, chemin[i].y, Joueurs, nb_tours, nb_joueurs);
-                    }
-                }
-                else
-                    return 0;
+    int ville_fermee = parcours_pts_ville(G_Traitees, x, y, Joueurs, nb_tours, nb_joueurs, &valide, pions_ville);
 
-            return 1;
-        }
-        else
+    if (ville_fermee != 0)
+    {
+        // DEBUG
+        // printf("\n");
+        // for (i = 0; i < 5; i++)
+        //     printf("Joueur %d : %d pion\t", i + 1, pions_ville[i]);
+        // printf("\n");
+
+        // printf("Zone fermée");
+        for (i = 0; i < 5; i++)
+            if (pions_ville[i] >= max_pion)
+                max_pion = pions_ville[i];
+
+        for (i = 0; i < 5; i++)
         {
-            if (Grille[x][y].centre == 'b')
-            {
-                for (i = 0; i < 4; i++)
-                    if (Grille[x][y].cotes[i] == 'b' && (Grille[chemin[i].x][chemin[i].y].posee == 1))
-                    {
-                        if (G_Traitees[x][y].traitee[i] != 1)
-                        {
-                            G_Traitees[x][y].traitee[i] = 1;
-                            G_Traitees[x][y].pion.idPion = -1;
-                            G_Traitees[x][y].pion.positionPion = -1;
-                            valide = (valide + 4) * (pts_ville(Grille, chemin[i].x, chemin[i].y, Joueurs, nb_tours, nb_joueurs));
-                        }
-                    }
-                    else
-                        return 0;
-                return 1;
-            }
+            if (pions_ville[i] == max_pion)
+                Joueurs[i].points += valide;
+
+            Joueurs[i].pionsPoses -= pions_ville[i];
         }
+
+        for (i = 0; i < 143; i++)
+            for (j = 0; j < 143; j++)
+                Grille[i][j] = G_Traitees[i][j];
     }
-    else
+    // scanf("%d", &i);
+}
+
+int parcours_pts_ville(struct tuile_s Grille[143][143], int x, int y, struct joueur_s *Joueurs, int nb_tours, int nb_joueurs, int *valide, int pions_ville[5])
+{
+    int i, double_ville = 0;
+
+    // Conditions d'arrêts pour s'il n'y a pas de problème, et qu'on n'incrémente pas
+    if ((x < 0 || x > 143 || y < 0 || y > 143) || Grille[x][y].visitee == 1)
+        return 1;
+
+    Grille[x][y].visitee = 1;
+
+    // Si la tuile n'est pas posée
+    if (Grille[x][y].posee == 0)
+    {
+        // printf("Non posée Grille[%d][%d]\n", x, y);
+        return 0;
+    }
+
+    // Ajout des pions dans le tableau de pions
+    for (i = 0; i < 4; i++)
+        if ((Grille[x][y].cotes[i] == 'v' || Grille[x][y].cotes[i] == 'b') && Grille[x][y].pion.positionPion == i)
+        {
+            pions_ville[Grille[x][y].pion.idPion] += 1;
+            Grille[x][y].pion.positionPion = -1;
+            Grille[x][y].pion.idPion = -1;
+        }
+    if ((Grille[x][y].centre == 'v' || Grille[x][y].centre == 'b') && Grille[x][y].pion.positionPion == 4)
+    {
+        pions_ville[Grille[x][y].pion.idPion] += 1;
+        Grille[x][y].pion.positionPion = -1;
+        Grille[x][y].pion.idPion = -1;
+    }
+
+    // sauvegarder si la première tuile du parcours est une division de villes
+    if (*valide == 0 && Grille[x][y].centre != 'v' && Grille[x][y].centre != 'b')
     {
         for (i = 0; i < 4; i++)
         {
-            if (Grille[x][y].cotes[i] == 'v' || Grille[x][y].cotes[i] == 'b')
-            {
-                if (Grille[x][y].cotes[i] == 'v' && G_Traitees[x][y].traitee[1] != 1)
-                {
-                    G_Traitees[x][y].traitee[i] = 1;
-                    valide = (valide + 2) * (pts_ville(Grille, chemin[i].x, chemin[i].y, Joueurs, nb_tours, nb_joueurs));
-                    return 1;
-                }
-            }
+            if (Grille[x][y].cotes[i] == 'v')
+                double_ville += 1;
         }
     }
-    return 0;
+
+    // incrémentation du score
+    if (Grille[x][y].centre != 'b')
+        *valide += 2;
+    else
+        *valide += 4;
+
+    // Si c'est une fin de ville (mais pas la première du parcours)
+    if (Grille[x][y].centre != 'v' && Grille[x][y].centre != 'b' && *valide > 2)
+        return 1;
+
+    int ville_fermee = 1;
+
+    // Appels des tuiles adjacentes
+    // Haut
+    if (x > 0 && (Grille[x - 1][y].cotes[2] == 'v' || Grille[x - 1][y].cotes[2] == 'b' || Grille[x - 1][y].posee == 0) && (Grille[x][y].cotes[0] == 'v' || Grille[x][y].cotes[0] == 'b'))
+    {
+        ville_fermee &= parcours_pts_ville(Grille, x - 1, y, Joueurs, nb_tours, nb_joueurs, valide, pions_ville);
+
+        if (double_ville == 2 && *valide > 2)
+        {
+            Grille[x][y].visitee = 0;
+            return ville_fermee;
+        }
+    }
+
+    // Droite
+    if (y < 142 && (Grille[x][y + 1].cotes[3] == 'v' || Grille[x][y + 1].cotes[3] == 'b' || Grille[x][y + 1].posee == 0) && (Grille[x][y].cotes[1] == 'v' || Grille[x][y].cotes[1] == 'b'))
+    {
+        ville_fermee &= parcours_pts_ville(Grille, x, y + 1, Joueurs, nb_tours, nb_joueurs, valide, pions_ville);
+
+        if (double_ville == 2 && *valide > 2)
+        {
+            Grille[x][y].visitee = 0;
+            return ville_fermee;
+        }
+    }
+
+    // Bas
+    if (x < 142 && (Grille[x + 1][y].cotes[0] == 'v' || Grille[x + 1][y].cotes[0] == 'b' || Grille[x + 1][y].posee == 0) && (Grille[x][y].cotes[2] == 'v' || Grille[x][y].cotes[2] == 'b'))
+    {
+        ville_fermee &= parcours_pts_ville(Grille, x + 1, y, Joueurs, nb_tours, nb_joueurs, valide, pions_ville);
+
+        if (double_ville == 2 && *valide > 2)
+        {
+            Grille[x][y].visitee = 0;
+            return ville_fermee;
+        }
+    }
+
+    // Gauche
+    if (y > 0 && (Grille[x][y - 1].cotes[1] == 'v' || Grille[x][y - 1].cotes[1] == 'b' || Grille[x][y - 1].posee == 0) && (Grille[x][y].cotes[3] == 'v' || Grille[x][y].cotes[3] == 'b'))
+    {
+        ville_fermee &= parcours_pts_ville(Grille, x, y - 1, Joueurs, nb_tours, nb_joueurs, valide, pions_ville);
+
+        if (double_ville == 2 && *valide > 2)
+        {
+            Grille[x][y].visitee = 0;
+            return ville_fermee;
+        }
+    }
+
+    return (ville_fermee);
 }
 
 void pts_abbaye(struct tuile_s Grille[143][143], int x, int y, struct joueur_s *Joueurs, int nb_tours, int nb_joueurs)

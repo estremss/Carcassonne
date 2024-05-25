@@ -54,6 +54,8 @@ struct position T_direction_route(int, int, int);
 void pts_FP(struct tuile_s[143][143], struct joueur_s *);
 
 // Compte les points des villes récursivement
-int pts_ville(struct tuile_s[143][143], int, int, struct joueur_s *, int, int);
+int parcours_pts_ville(struct tuile_s[143][143], int, int, struct joueur_s *, int, int, int *, int[5]);
+
+void pts_ville(struct tuile_s[143][143], struct joueur_s *, int, int, int, int);
 
 #endif // FCT_CARCASSONNE
