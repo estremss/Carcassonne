@@ -767,106 +767,109 @@ void affichage(struct tuile_s Grille[143][143], struct tuile_s Pile[72], int nb_
     int coord_max = NB_TUILES + nb_tours, coord_min = NB_TUILES - nb_tours; // pour ne pas recalculer à chaque itération
 
     system("clear");
-    printf("Tour : %d/72\n", nb_tours);
-    afficher_joueurs(nb_joueurs, nb_tours, Joueur);
-    // afficher_tuile_en_cours(Pile[nb_tours]);
-    afficher_tuile_en_cours_couleur(Pile[nb_tours]);
-
-    // Trouver les max
-
-    for (i = coord_min; i <= coord_max; i++)
+    if (nb_tours < 70)
     {
-        for (j = coord_min; j <= coord_max; j++)
+        printf("Tour : %d/72\n", nb_tours);
+        afficher_joueurs(nb_joueurs, nb_tours, Joueur);
+        afficher_tuile_en_cours_couleur(Pile[nb_tours]);
+        // afficher_tuile_en_cours(Pile[nb_tours]);
+    }
+
+        // Trouver les max
+
+        for (i = coord_min; i <= coord_max; i++)
         {
-            if (Grille[i][j].posee == 1)
+            for (j = coord_min; j <= coord_max; j++)
             {
-                if (i < *h) // si tuile posée et i < h (donc i plus haut que hauteur_max actuelle)
-                    *h = i;
-                if (i > *b)
-                    *b = i;
-                if (j < *g)
-                    *g = j;
-                if (j > *d)
-                    *d = j;
+                if (Grille[i][j].posee == 1)
+                {
+                    if (i < *h) // si tuile posée et i < h (donc i plus haut que hauteur_max actuelle)
+                        *h = i;
+                    if (i > *b)
+                        *b = i;
+                    if (j < *g)
+                        *g = j;
+                    if (j > *d)
+                        *d = j;
+                }
             }
         }
-    }
 
-    posable(Grille, Pile[nb_tours], *h, *b, *g, *d);
+        posable(Grille, Pile[nb_tours], *h, *b, *g, *d);
 
-    // Affichage (on laisse une marge de 1 dans les coins)
+        // Affichage (on laisse une marge de 1 dans les coins)
 
-    // Affichage coord abcisses
-    printf("    ");
-    for (i = *g - 1; i <= *d + 1; i++)
-    {
-        printf("  %3d ", i);
-    }
-    printf("\n    ");
-
-    // Affichage ligne de tirets
-    for (i = 0; i < 6 * (*d - *g + 3) + 2; i++)
-    {
-        printf("-");
-    }
-    printf("\n");
-
-    // Affichage de la grille
-    for (i = *h - 1; i <= *b + 1; i++)
-    {
-        afficher_ligne_couleur(Grille, i, *g - 1, *d + 1);
-    }
-
-    // Affichage ligne de tirets
-    printf("    ");
-    for (i = 0; i < 6 * (*d - *g + 3) + 2; i++)
-    {
-        printf("-");
-    }
-    printf("\n");
-
-    // Affichage ordonnées du bas
-    printf("    ");
-    for (i = *g - 1; i <= *d + 1; i++)
-    {
-        printf("  %3d ", i);
-    }
-    printf("\n\n");
-}
-
-void affichage_fin(struct joueur_s *Joueurs, int nb_joueurs)
-{
-    int i, j;
-    struct joueur_s temp;
-    for (i = 0; i < nb_joueurs; i++)
-    {
-        Joueurs[i].idJoueur = i;
-    }
-    for (i = 0; i < nb_joueurs - 1; i++)
-    {
-        for (j = 0; j < nb_joueurs - i - 1; j++)
+        // Affichage coord abcisses
+        printf("    ");
+        for (i = *g - 1; i <= *d + 1; i++)
         {
-            if (Joueurs[j].points <= Joueurs[j + 1].points)
+            printf("  %3d ", i);
+        }
+        printf("\n    ");
+
+        // Affichage ligne de tirets
+        for (i = 0; i < 6 * (*d - *g + 3) + 2; i++)
+        {
+            printf("-");
+        }
+        printf("\n");
+
+        // Affichage de la grille
+        for (i = *h - 1; i <= *b + 1; i++)
+        {
+            afficher_ligne_couleur(Grille, i, *g - 1, *d + 1);
+        }
+
+        // Affichage ligne de tirets
+        printf("    ");
+        for (i = 0; i < 6 * (*d - *g + 3) + 2; i++)
+        {
+            printf("-");
+        }
+        printf("\n");
+
+        // Affichage ordonnées du bas
+        printf("    ");
+        for (i = *g - 1; i <= *d + 1; i++)
+        {
+            printf("  %3d ", i);
+        }
+        printf("\n\n");
+    }
+
+    void affichage_fin(struct joueur_s * Joueurs, int nb_joueurs)
+    {
+        int i, j;
+        struct joueur_s temp;
+        for (i = 0; i < nb_joueurs; i++)
+        {
+            Joueurs[i].idJoueur = i;
+        }
+        for (i = 0; i < nb_joueurs - 1; i++)
+        {
+            for (j = 0; j < nb_joueurs - i - 1; j++)
             {
-                temp = Joueurs[j];
-                Joueurs[j] = Joueurs[j + 1];
-                Joueurs[j + 1] = temp;
+                if (Joueurs[j].points <= Joueurs[j + 1].points)
+                {
+                    temp = Joueurs[j];
+                    Joueurs[j] = Joueurs[j + 1];
+                    Joueurs[j + 1] = temp;
+                }
             }
         }
-    }
-    printf("\t\t\t\t  _____     _     _                          _                                           \n");
-    printf("\t\t\t\t |_   _|_ _| |__ | | ___  __ _ _   _      __| | ___  ___     ___  ___ ___  _ __ ___  ___ \n");
-    printf("\t\t\t\t   | |/ _` | '_ \\| |/ _ \\/ _` | | | |    / _` |/ _ \\/ __|   / __|/ __/ _ \\| '__/ _ \\/ __|\n");
-    printf("\t\t\t\t   | | (_| | |_) | |  __/ (_| | |_| |   | (_| |  __/\\__ \\   \\__ \\ (_| (_) | | |  __/\\__ \\\n");
-    printf("\t\t\t\t   |_|\\__,_|_.__/|_|\\___|\\__,_|\\__,_|    \\__,_|\\___||___/   |___/\\___\\___/|_|  \\___||___/\n");
-    printf("\t\t\t\t                                                                                         \n");
+        printf("\t\t\t\t  _____     _     _                          _                                           \n");
+        printf("\t\t\t\t |_   _|_ _| |__ | | ___  __ _ _   _      __| | ___  ___     ___  ___ ___  _ __ ___  ___ \n");
+        printf("\t\t\t\t   | |/ _` | '_ \\| |/ _ \\/ _` | | | |    / _` |/ _ \\/ __|   / __|/ __/ _ \\| '__/ _ \\/ __|\n");
+        printf("\t\t\t\t   | | (_| | |_) | |  __/ (_| | |_| |   | (_| |  __/\\__ \\   \\__ \\ (_| (_) | | |  __/\\__ \\\n");
+        printf("\t\t\t\t   |_|\\__,_|_.__/|_|\\___|\\__,_|\\__,_|    \\__,_|\\___||___/   |___/\\___\\___/|_|  \\___||___/\n");
+        printf("\t\t\t\t                                                                                         \n");
 
-    printf("\t\t\t\t\t╔══════════════════════════════════╦═════════╦════════════════════════╗\n");
-    printf("\t\t\t\t\t║               Joueurs            ║   Pts   ║       Classement       ║\n");
-    for (i = 0; i < nb_joueurs; i++)
-    {
-        printf("\t\t\t\t\t╠══════════════════════════════════╬═════════╬════════════════════════╣\n");
-        printf("\t\t\t\t\t║ Joueur %d                         ║  %3d    ║           %d            ║\n", Joueurs[i].idJoueur + 1, Joueurs[i].points, i + 1);
+        printf("\t\t\t\t\t╔══════════════════════════════════╦═════════╦════════════════════════╗\n");
+        printf("\t\t\t\t\t║               Joueurs            ║   Pts   ║       Classement       ║\n");
+        for (i = 0; i < nb_joueurs; i++)
+        {
+            printf("\t\t\t\t\t╠══════════════════════════════════╬═════════╬════════════════════════╣\n");
+            printf("\t\t\t\t\t║ Joueur %d                         ║  %3d    ║           %d            ║\n", Joueurs[i].idJoueur + 1, Joueurs[i].points, i + 1);
+        }
+        printf("\t\t\t\t\t╚══════════════════════════════════╩═════════╩════════════════════════╝\n");
     }
-    printf("\t\t\t\t\t╚══════════════════════════════════╩═════════╩════════════════════════╝\n");
-}

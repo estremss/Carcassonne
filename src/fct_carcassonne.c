@@ -17,7 +17,7 @@ struct tuile_s depiler(struct tuile_s *Pile, int nb_tours)
     return Pile[nb_tours];
 }
 
-int deplacer_tuile_en_derniere_position(struct tuile_s *Pile, int nb_tours, struct tuile_s Grille[143][143], int h, int b, int g, int d)
+void deplacer_tuile_en_derniere_position(struct tuile_s *Pile, int nb_tours, struct tuile_s Grille[143][143], int h, int b, int g, int d)
 {
     int i, cnt_posable = 0;
     struct tuile_s save = Pile[nb_tours];
@@ -36,8 +36,6 @@ int deplacer_tuile_en_derniere_position(struct tuile_s *Pile, int nb_tours, stru
         }
         Pile[NB_TUILES - 1] = save;
     }
-
-    return cnt_posable;
 }
 
 void melange(struct tuile_s *Pile)
@@ -187,13 +185,13 @@ void poser_tuile(struct tuile_s Grille[143][143], struct tuile_s Pile[NB_TUILES]
         }
 
         if (Grille[x][y].centre == 'v' || Grille[x][y].centre == 'b')
-            pts_ville(Grille, Joueur, x, y, *nb_tours, nb_joueurs);
+            pts_ville(Grille, Joueur, x, y);
 
         else
         {
             for (i = 0; i < 4; i++)
                 if (Grille[x][y].cotes[i] == 'v' || Grille[x][y].cotes[i] == 'b')
-                    pts_ville(Grille, Joueur, x, y, *nb_tours, nb_joueurs);
+                    pts_ville(Grille, Joueur, x, y);
         }
 
         *nb_tours += 1;
@@ -218,7 +216,7 @@ void poser_pion(struct tuile_s Grille[143][143], struct joueur_s *Joueur, int nb
         }
     }
     else
-        choixPoserPion = rand() % 2;
+        choixPoserPion = rand() % 4;
 
     if (choixPoserPion == 1)
     {
@@ -241,6 +239,7 @@ void poser_pion(struct tuile_s Grille[143][143], struct joueur_s *Joueur, int nb
                (position == 4 && Grille[x][y].centre == 'V') ||
                (Grille[x][y].centre == 'r' && position == 4 && verif_route_iteratif(Grille, x, y, position) != 0) ||
                (position < 4 && Grille[x][y].cotes[position] == 'r' && verif_route_iteratif(Grille, x, y, position) != 0) ||
+               (pions_ville(Grille, x, y, position) == 0) ||
                (position < 0 || position > 4))
         {
             // DEBUG
@@ -823,7 +822,8 @@ void pts_route_FP(struct tuile_s Grille[143][143], int x, int y, int direction, 
             Grille[i][j] = G_Traitees[i][j];
 }
 
-void pts_ville(struct tuile_s Grille[143][143], struct joueur_s *Joueurs, int x, int y, int nb_tours, int nb_joueurs)
+// mode 1 = pts_ville   mode 2 = pions_ville
+void pts_ville(struct tuile_s Grille[143][143], struct joueur_s *Joueurs, int x, int y)
 {
     int i, j, max_pion = 1;
     struct tuile_s G_Traitees[143][143];
@@ -835,17 +835,8 @@ void pts_ville(struct tuile_s Grille[143][143], struct joueur_s *Joueurs, int x,
         for (j = 0; j < 143; j++)
             G_Traitees[i][j] = Grille[i][j];
 
-    int ville_fermee = parcours_pts_ville(G_Traitees, x, y, Joueurs, nb_tours, nb_joueurs, &valide, pions_ville);
-
-    if (ville_fermee != 0)
+    if (parcours_pts_ville(G_Traitees, x, y, &valide, pions_ville) != 0)
     {
-        // DEBUG
-        // printf("\n");
-        // for (i = 0; i < 5; i++)
-        //     printf("Joueur %d : %d pion\t", i + 1, pions_ville[i]);
-        // printf("\n");
-
-        // printf("Zone fermée");
         for (i = 0; i < 5; i++)
             if (pions_ville[i] >= max_pion)
                 max_pion = pions_ville[i];
@@ -862,10 +853,29 @@ void pts_ville(struct tuile_s Grille[143][143], struct joueur_s *Joueurs, int x,
             for (j = 0; j < 143; j++)
                 Grille[i][j] = G_Traitees[i][j];
     }
-    // scanf("%d", &i);
 }
 
-int parcours_pts_ville(struct tuile_s Grille[143][143], int x, int y, struct joueur_s *Joueurs, int nb_tours, int nb_joueurs, int *valide, int pions_ville[5])
+int pions_ville(struct tuile_s Grille[143][143], int x, int y, int position)
+{
+    int i, j, valide = 0, cnt = 0;
+    struct tuile_s G_Traitees[143][143];
+
+    // copie du tableau
+    for (i = 0; i < 143; i++)
+        for (j = 0; j < 143; j++)
+            G_Traitees[i][j] = Grille[i][j];
+
+    for (i = 0; i < 4; i++)
+        if (Grille[x][y].cotes[i] == 'v' || Grille[x][y].cotes[i] == 'b')
+            cnt++;
+
+    if (Grille[x][y].centre == 'v' || Grille[x][y].centre == 'b' || cnt == 0)
+        return 1;
+
+    return verif_pions_ville(G_Traitees, x, y, &valide, position);
+}
+
+int parcours_pts_ville(struct tuile_s Grille[143][143], int x, int y, int *valide, int pions_ville[5])
 {
     int i, double_ville = 0;
 
@@ -923,7 +933,7 @@ int parcours_pts_ville(struct tuile_s Grille[143][143], int x, int y, struct jou
     // Haut
     if (x > 0 && (Grille[x - 1][y].cotes[2] == 'v' || Grille[x - 1][y].cotes[2] == 'b' || Grille[x - 1][y].posee == 0) && (Grille[x][y].cotes[0] == 'v' || Grille[x][y].cotes[0] == 'b'))
     {
-        ville_fermee &= parcours_pts_ville(Grille, x - 1, y, Joueurs, nb_tours, nb_joueurs, valide, pions_ville);
+        ville_fermee &= parcours_pts_ville(Grille, x - 1, y, valide, pions_ville);
 
         if (double_ville == 2 && *valide > 2)
         {
@@ -935,7 +945,7 @@ int parcours_pts_ville(struct tuile_s Grille[143][143], int x, int y, struct jou
     // Droite
     if (y < 142 && (Grille[x][y + 1].cotes[3] == 'v' || Grille[x][y + 1].cotes[3] == 'b' || Grille[x][y + 1].posee == 0) && (Grille[x][y].cotes[1] == 'v' || Grille[x][y].cotes[1] == 'b'))
     {
-        ville_fermee &= parcours_pts_ville(Grille, x, y + 1, Joueurs, nb_tours, nb_joueurs, valide, pions_ville);
+        ville_fermee &= parcours_pts_ville(Grille, x, y + 1, valide, pions_ville);
 
         if (double_ville == 2 && *valide > 2)
         {
@@ -947,7 +957,7 @@ int parcours_pts_ville(struct tuile_s Grille[143][143], int x, int y, struct jou
     // Bas
     if (x < 142 && (Grille[x + 1][y].cotes[0] == 'v' || Grille[x + 1][y].cotes[0] == 'b' || Grille[x + 1][y].posee == 0) && (Grille[x][y].cotes[2] == 'v' || Grille[x][y].cotes[2] == 'b'))
     {
-        ville_fermee &= parcours_pts_ville(Grille, x + 1, y, Joueurs, nb_tours, nb_joueurs, valide, pions_ville);
+        ville_fermee &= parcours_pts_ville(Grille, x + 1, y, valide, pions_ville);
 
         if (double_ville == 2 && *valide > 2)
         {
@@ -959,7 +969,7 @@ int parcours_pts_ville(struct tuile_s Grille[143][143], int x, int y, struct jou
     // Gauche
     if (y > 0 && (Grille[x][y - 1].cotes[1] == 'v' || Grille[x][y - 1].cotes[1] == 'b' || Grille[x][y - 1].posee == 0) && (Grille[x][y].cotes[3] == 'v' || Grille[x][y].cotes[3] == 'b'))
     {
-        ville_fermee &= parcours_pts_ville(Grille, x, y - 1, Joueurs, nb_tours, nb_joueurs, valide, pions_ville);
+        ville_fermee &= parcours_pts_ville(Grille, x, y - 1, valide, pions_ville);
 
         if (double_ville == 2 && *valide > 2)
         {
@@ -968,7 +978,57 @@ int parcours_pts_ville(struct tuile_s Grille[143][143], int x, int y, struct jou
         }
     }
 
-    return (ville_fermee);
+    return ville_fermee;
+}
+
+int verif_pions_ville(struct tuile_s Grille[143][143], int x, int y, int *cnt, int initPion)
+{
+    struct position P;
+
+    // Conditions d'arrêts pour s'il n'y a pas de problème, et qu'on n'incrémente pas
+    if ((x < 0 || x > 143 || y < 0 || y > 143) || Grille[x][y].visitee == 1 || Grille[x][y].posee == 0)
+        return 1;
+
+    if (Grille[x][y].pion.positionPion != -1)
+        return 0;
+
+    Grille[x][y].visitee = 1;
+
+    // incrémentation déplacement
+    cnt += 1;
+
+    // Si c'est une fin de ville (mais pas la première du parcours)
+    if (Grille[x][y].centre != 'v' && Grille[x][y].centre != 'b' && *cnt > 1)
+        return 1;
+
+    int posable = 1;
+
+    // Appels des tuiles adjacentes
+    if (*cnt == 0 && Grille[x][y].centre != 'v' && Grille[x][y].centre != 'b' && initPion != 4)
+    {
+        P = T_direction_route(initPion, x, y);
+        posable &= verif_pions_ville(Grille, P.x, P.y, cnt, initPion);
+    }
+    else
+    {
+        // Haut
+        if (x > 0 && (Grille[x - 1][y].cotes[2] == 'v' || Grille[x - 1][y].cotes[2] == 'b' || Grille[x - 1][y].posee == 0) && (Grille[x][y].cotes[0] == 'v' || Grille[x][y].cotes[0] == 'b'))
+            posable &= verif_pions_ville(Grille, x - 1, y, cnt, initPion);
+
+        // Droite
+        if (y < 142 && (Grille[x][y + 1].cotes[3] == 'v' || Grille[x][y + 1].cotes[3] == 'b' || Grille[x][y + 1].posee == 0) && (Grille[x][y].cotes[1] == 'v' || Grille[x][y].cotes[1] == 'b'))
+            posable &= verif_pions_ville(Grille, x, y + 1, cnt, initPion);
+
+        // Bas
+        if (x < 142 && (Grille[x + 1][y].cotes[0] == 'v' || Grille[x + 1][y].cotes[0] == 'b' || Grille[x + 1][y].posee == 0) && (Grille[x][y].cotes[2] == 'v' || Grille[x][y].cotes[2] == 'b'))
+            posable &= verif_pions_ville(Grille, x + 1, y, cnt, initPion);
+
+        // Gauche
+        if (y > 0 && (Grille[x][y - 1].cotes[1] == 'v' || Grille[x][y - 1].cotes[1] == 'b' || Grille[x][y - 1].posee == 0) && (Grille[x][y].cotes[3] == 'v' || Grille[x][y].cotes[3] == 'b'))
+            posable &= verif_pions_ville(Grille, x, y - 1, cnt, initPion);
+    }
+
+    return posable;
 }
 
 void pts_abbaye(struct tuile_s Grille[143][143], int x, int y, struct joueur_s *Joueurs, int nb_tours, int nb_joueurs)
