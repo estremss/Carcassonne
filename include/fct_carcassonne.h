@@ -1,5 +1,11 @@
 #ifndef FCT_CARCASSONNE
 #define FCT_CARCASSONNE
+
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
+#include <time.h>
+
 #include "game_structures.h"
 
 // Parse le fichier CSV de tuiles et les mets dans la pile
