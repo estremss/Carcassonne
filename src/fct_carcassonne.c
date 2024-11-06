@@ -621,7 +621,7 @@ void pts_route_FP(struct tuile_s Grille[143][143], int x, int y, int direction, 
     if (i == 4 && Grille[x][y].centre != 'r')
         return;
 
-    // copie du tableauu
+    // copie du tableau
     for (i = 0; i < 143; i++)
         for (j = 0; j < 143; j++)
             G_Traitees[i][j] = Grille[i][j];

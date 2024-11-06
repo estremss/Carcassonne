@@ -19,11 +19,12 @@ $(EXE): $(OBJ_FILES)
 	$(CC) $^ -o $@
 	@echo "\nTappez ./$@ pour exécuter"
 	
-$(OBJ)/%.o: $(SRC)/%.c $(INC_FILES)
+$(OBJ)/%.o: $(SRC)/%.c $(INC_FILES) | $(OBJ)
 	$(CC) $(CFLAGS) $< -o $@
 
 $(OBJ):
 	mkdir -p $(OBJ)
 
 clean:
-	rm -f $(EXE) $(OBJ)/*
+	rm -f $(EXE)
+	rm -rf $(OBJ)
