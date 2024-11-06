@@ -1,31 +1,29 @@
-SRC = ./src/
-INC = ./include/
-OBJ = ./obj/
-BIN = ./bin/
-LIB = ./lib/
+SRC = src
+OBJ = obj
+# LIB = lib
 
 CC = gcc
-CFLAGS = -Wall -std=gnu11
-EXEC = carcassonne
+CFLAGS = -Wall -c -Iinclude
+EXE = carcassonne
+OBJ_FILES = $(patsubst $(SRC)/%.c, $(OBJ)/%.o, $(wildcard $(SRC)/*.c))
+INC_FILES = $(wildcard include/*.hpp)
 
 .PHONY: all run clean
 
-all: $(EXEC)
+all: $(EXE)
 
-run: $(EXEC)
-	$(BIN)$<
+run: $(EXE)
+	./$<
 
-$(EXEC): moteur_jeu.o fct_carcassonne.o affichage.o
-	$(CC) $(OBJ)* $(LIBS) -I $(INC) -o $(BIN)$@ -lm
+$(EXE): $(OBJ_FILES)
+	$(CC) $^ -o $@
+	@echo "\nTappez ./$@ pour exécuter"
 	
-moteur_jeu.o: $(SRC)moteur_jeu.c
-	$(CC) $(CFLAGS) $< -c -I $(INC) -o $(OBJ)$@
+$(OBJ)/%.o: $(SRC)/%.c $(INC_FILES)
+	$(CC) $(CFLAGS) $< -o $@
 
-fct_carcassonne.o: $(SRC)fct_carcassonne.c
-	$(CC) $(CFLAGS) $< -c -I $(INC) -o $(OBJ)$@
-
-affichage.o: $(SRC)affichage.c
-	$(CC) $(CFLAGS) $< -c -I $(INC) -o $(OBJ)$@
+$(OBJ):
+	mkdir -p $(OBJ)
 
 clean:
-	rm $(BIN)* $(OBJ)*
+	rm -f $(EXE) $(OBJ)/*
