@@ -819,7 +819,38 @@ void pts_route_FP(struct tuile_s Grille[143][143], int x, int y, int direction, 
             Grille[i][j] = G_Traitees[i][j];
 }
 
-// mode 1 = pts_ville   mode 2 = pions_ville
+void pts_ville_FP(struct tuile_s Grille[143][143], struct joueur_s *Joueurs, int x, int y)
+{
+    int i, j, max_pion = 1;
+    struct tuile_s G_Traitees[143][143];
+    int valide = 0;
+    int pions_ville[5] = {0, 0, 0, 0, 0};
+
+    // copie du tableau
+    for (i = 0; i < 143; i++)
+        for (j = 0; j < 143; j++)
+            G_Traitees[i][j] = Grille[i][j];
+
+    if (parcours_pts_ville_FP(G_Traitees, x, y, &valide, pions_ville) != 0)
+    {
+        for (i = 0; i < 5; i++)
+            if (pions_ville[i] >= max_pion)
+                max_pion = pions_ville[i];
+
+        for (i = 0; i < 5; i++)
+        {
+            if (pions_ville[i] == max_pion)
+                Joueurs[i].points += valide;
+
+            Joueurs[i].pionsPoses -= pions_ville[i];
+        }
+
+        for (i = 0; i < 143; i++)
+            for (j = 0; j < 143; j++)
+                Grille[i][j] = G_Traitees[i][j];
+    }
+}
+
 void pts_ville(struct tuile_s Grille[143][143], struct joueur_s *Joueurs, int x, int y)
 {
     int i, j, max_pion = 1;
@@ -916,12 +947,6 @@ int parcours_pts_ville(struct tuile_s Grille[143][143], int x, int y, int *valid
             if (Grille[x][y].cotes[i] == 'v')
                 double_ville += 1;
         }
-        // if (double_ville == 2)
-        // {
-        //     *valide += 2; // le score sera forcément incrémenté de 2
-        //     // et on fait l'appel sur la tuile dans la bonne direction
-        //     struct position P = T_direction_route()
-        // }
     }
 
     // incrémentation du score
@@ -986,6 +1011,99 @@ int parcours_pts_ville(struct tuile_s Grille[143][143], int x, int y, int *valid
     return ville_fermee;
 }
 
+int parcours_pts_ville_FP(struct tuile_s Grille[143][143], int x, int y, int *valide, int pions_ville[5])
+{
+    int i, double_ville = 0;
+
+    // Conditions d'arrêts pour s'il n'y a pas de problème, et qu'on n'incrémente pas
+    if ((x < 0 || x > 143 || y < 0 || y > 143) || Grille[x][y].visitee == 1 || Grille[x][y].posee == 0)
+        return 1;
+
+    Grille[x][y].visitee = 1;
+
+    // Ajout des pions dans le tableau de pions
+    for (i = 0; i < 4; i++)
+        if ((Grille[x][y].cotes[i] == 'v' || Grille[x][y].cotes[i] == 'b') && Grille[x][y].pion.positionPion == i)
+            pions_ville[Grille[x][y].pion.idPion] += 1;
+        
+    if ((Grille[x][y].centre == 'v' || Grille[x][y].centre == 'b') && Grille[x][y].pion.positionPion == 4)
+        pions_ville[Grille[x][y].pion.idPion] += 1;
+
+
+    int ville_fermee = 1;
+
+    // sauvegarder si la première tuile du parcours est une division de villes
+    if (*valide == 0 && Grille[x][y].centre != 'v' && Grille[x][y].centre != 'b')
+    {
+        for (i = 0; i < 4; i++)
+        {
+            if (Grille[x][y].cotes[i] == 'v')
+                double_ville += 1;
+        }
+    }
+
+    // incrémentation du score
+    if (Grille[x][y].centre != 'b')
+        *valide += 1;
+    else
+        *valide += 2;
+
+    // Si c'est une fin de ville (mais pas la première du parcours)
+    if (Grille[x][y].centre != 'v' && Grille[x][y].centre != 'b' && *valide > 2)
+        return 1;
+
+    // Appels des tuiles adjacentes
+    // Haut
+    if (x > 0 && (Grille[x - 1][y].cotes[2] == 'v' || Grille[x - 1][y].cotes[2] == 'b' || Grille[x - 1][y].posee == 0) && (Grille[x][y].cotes[0] == 'v' || Grille[x][y].cotes[0] == 'b'))
+    {
+        ville_fermee |= parcours_pts_ville(Grille, x - 1, y, valide, pions_ville);
+
+        if (double_ville == 2 && *valide > 2)
+        {
+            Grille[x][y].visitee = 0; // pour pouvoir retraiter cette tuile plus tard
+            return ville_fermee;
+        }
+    }
+
+    // Droite
+    if (y < 142 && (Grille[x][y + 1].cotes[3] == 'v' || Grille[x][y + 1].cotes[3] == 'b' || Grille[x][y + 1].posee == 0) && (Grille[x][y].cotes[1] == 'v' || Grille[x][y].cotes[1] == 'b'))
+    {
+        ville_fermee |= parcours_pts_ville(Grille, x, y + 1, valide, pions_ville);
+
+        if (double_ville == 2 && *valide > 2)
+        {
+            Grille[x][y].visitee = 0;
+            return ville_fermee;
+        }
+    }
+
+    // Bas
+    if (x < 142 && (Grille[x + 1][y].cotes[0] == 'v' || Grille[x + 1][y].cotes[0] == 'b' || Grille[x + 1][y].posee == 0) && (Grille[x][y].cotes[2] == 'v' || Grille[x][y].cotes[2] == 'b'))
+    {
+        ville_fermee |= parcours_pts_ville(Grille, x + 1, y, valide, pions_ville);
+
+        if (double_ville == 2 && *valide > 2)
+        {
+            Grille[x][y].visitee = 0;
+            return ville_fermee;
+        }
+    }
+
+    // Gauche
+    if (y > 0 && (Grille[x][y - 1].cotes[1] == 'v' || Grille[x][y - 1].cotes[1] == 'b' || Grille[x][y - 1].posee == 0) && (Grille[x][y].cotes[3] == 'v' || Grille[x][y].cotes[3] == 'b'))
+    {
+        ville_fermee |= parcours_pts_ville(Grille, x, y - 1, valide, pions_ville);
+
+        if (double_ville == 2 && *valide > 2)
+        {
+            Grille[x][y].visitee = 0;
+            return ville_fermee;
+        }
+    }
+
+    return ville_fermee;
+}
+
 int verif_pions_ville(struct tuile_s Grille[143][143], int x, int y, int *cnt, int initPion)
 {
     struct position P;
@@ -1003,7 +1121,6 @@ int verif_pions_ville(struct tuile_s Grille[143][143], int x, int y, int *cnt, i
     {
         return 0;
     }
-
 
     // Si c'est une fin de ville (mais pas la première du parcours)
     if (Grille[x][y].centre != 'v' && Grille[x][y].centre != 'b' && *cnt > 1)
@@ -1114,18 +1231,28 @@ void pts_FP(struct tuile_s Grille[143][143], struct joueur_s *Joueurs)
             {
                 pts_abbaye_FP(Grille, i, j, Joueurs);
             }
-            if (((i > 0 && j > 0) && (i < 141 && j < 142)) && (Grille[i][j].cotes[0] == 'r' || Grille[i][j].cotes[1] == 'r' || Grille[i][j].cotes[2] == 'r' || Grille[i][j].cotes[3] == 'r' || Grille[i][j].centre == 'r') && Grille[i][j].pion.positionPion != -1)
+            if (((i > 0 && j > 0) && (i < 141 && j < 142)) && Grille[i][j].pion.positionPion != -1)
             {
-                if (Grille[i][j].centre != 'r')
+                // pour les routes
+                if (Grille[i][j].cotes[0] == 'r' || Grille[i][j].cotes[1] == 'r' || Grille[i][j].cotes[2] == 'r' || Grille[i][j].cotes[3] == 'r' || Grille[i][j].centre == 'r')
                 {
-                    for (k = 0; k < 4; k++)
+                    if (Grille[i][j].centre != 'r')
                     {
-                        if (Grille[i][j].cotes[k] == 'r' && Grille[i][j].traitee[k] == 0)
-                            pts_route_FP(Grille, i, j, k, Joueurs);
+                        for (k = 0; k < 4; k++)
+                        {
+                            if (Grille[i][j].cotes[k] == 'r' && Grille[i][j].traitee[k] == 0)
+                                pts_route_FP(Grille, i, j, k, Joueurs);
+                        }
                     }
+                    else if (Grille[i][j].traitee[4] == 0)
+                        pts_route_FP(Grille, i, j, 4, Joueurs);
                 }
-                else if (Grille[i][j].traitee[4] == 0)
-                    pts_route_FP(Grille, i, j, 4, Joueurs);
+                // pour les villes
+                if (Grille[i][j].cotes[0] == 'v' || Grille[i][j].cotes[1] == 'v' || Grille[i][j].cotes[2] == 'v' || Grille[i][j].cotes[3] == 'v' || Grille[i][j].centre == 'v' ||
+                    Grille[i][j].centre == 'b')
+                {
+                    pts_ville_FP(Grille, Joueurs, i, j);
+                }
             }
         }
 }

@@ -62,8 +62,13 @@ void pts_FP(struct tuile_s[143][143], struct joueur_s *);
 // Compte les points des villes récursivement
 int parcours_pts_ville(struct tuile_s[143][143], int, int, int *, int[5]);
 
+int parcours_pts_ville_FP(struct tuile_s[143][143], int, int, int *, int[5]);
+
 // Compte les points pour la ville
 void pts_ville(struct tuile_s[143][143], struct joueur_s *, int, int);
+
+// Compte les points pour la ville à la fin de la partie
+void pts_ville_FP(struct tuile_s[143][143], struct joueur_s *, int, int);
 
 // Indique si le pion est posable sur la ville
 int pions_ville(struct tuile_s[143][143], int, int, int);

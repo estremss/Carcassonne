@@ -1,22 +1,19 @@
-# Projet de Programmation du jeu de société Carcassonne en Langage C (Linux)
+# Carcassonne Board Game Programming Project in C Language (Linux)
 
-### Auteurs : Assalas ARAB ; Evan ESTREMS
+### Authors : Assalas ARAB ; Evan ESTREMS
 
-:warning: *Les push sur le projet ne sont pas représentatifs de l'implication dans le projet. Le projet a été développé dans son intégralité en Pair Programming sur un ordinateur commun.* :warning:
+:warning: *Pushes to the project repository are not indicative of individual contributions. The project was fully developed using Pair Programming on a shared computer.* :warning:
 
-Dans le cadre d'un projet de programmation en L2 Informatique, nous avons développé la version C du jeu de société Carcassonne.
-Nous avons choisi que chaque joueur commence la partie avec 6 pions.
+As part of a programming project in our second year of Computer Science, we developed the C version of the Carcassonne board game. Each player starts the game with 6 meeples.
 
-Pour compiler le projet dans un terminal Linux :
+To compile and run the project on a Linux terminal:
 
-1. Ouvrez un terminal Linux en plein écran (assurez-vous qu'il soit en UTF-8)
-2. Placez-vous dans le répertoire Carcassonne
-3. Utilisez la commande `make` pour compiler le projet
-4. Exécutez le binaire en tapant `./bin/carcassonne`
-5. Adaptez le zoom à votre guise
+1. Open a full-screen Linux terminal in the Carcassonne directory (make sure it uses UTF-8 encoding)
+2. Use `make run` to compile and run the game
+3. Adjust the zoom as needed
 
-**Note :** évitez de poser des pions au centre quand il y a un blason au centre (par soucis d'affichage d'un terminal à l'autre)
+**Note :** Avoid placing meeples in the center when there is a coat of arms in the middle (due to display differences between terminals).
 
-Source des ASCII ARTS :  
+ASCII ARTS sources :  
 [patorjk.com](https://patorjk.com/software/taag/#p=display&f=Graffiti&t=Type%20Something%20)  
 [asciiart.eu](https://www.asciiart.eu/buildings-and-places/castles)
