@@ -235,7 +235,8 @@ void poser_pion(struct tuile_s Grille[143][143], struct joueur_s *Joueur, int nb
                (position == 4 && Grille[x][y].centre == 'V') ||
                (Grille[x][y].centre == 'r' && position == 4 && verif_route_iteratif(Grille, x, y, position) != 0) ||
                (position < 4 && Grille[x][y].cotes[position] == 'r' && verif_route_iteratif(Grille, x, y, position) != 0) ||
-               (pions_ville(Grille, x, y, position) == 0) ||
+               (Grille[x][y].centre == 'v' && position == 4 && pions_ville(Grille, x, y, position) == 0) ||
+               (Grille[x][y].cotes[position] == 'v' && position < 4 && pions_ville(Grille, x, y, position) == 0) ||
                (position < 0 || position > 4))
         {
             // DEBUG
@@ -865,7 +866,9 @@ int pions_ville(struct tuile_s Grille[143][143], int x, int y, int position)
         if (Grille[x][y].cotes[i] == 'v' || Grille[x][y].cotes[i] == 'b')
             cnt++;
 
-    if (Grille[x][y].centre == 'v' || Grille[x][y].centre == 'b' || cnt == 0)
+    // // Anciennce condition que je ne comprends pas
+    // if (Grille[x][y].centre == 'v' || Grille[x][y].centre == 'b' || cnt == 0)
+    if (cnt == 0)
         return 1;
 
     return verif_pions_ville(G_Traitees, x, y, &valide, position);
@@ -903,6 +906,8 @@ int parcours_pts_ville(struct tuile_s Grille[143][143], int x, int y, int *valid
         Grille[x][y].pion.idPion = -1;
     }
 
+    int ville_fermee = 1;
+
     // sauvegarder si la première tuile du parcours est une division de villes
     if (*valide == 0 && Grille[x][y].centre != 'v' && Grille[x][y].centre != 'b')
     {
@@ -911,6 +916,12 @@ int parcours_pts_ville(struct tuile_s Grille[143][143], int x, int y, int *valid
             if (Grille[x][y].cotes[i] == 'v')
                 double_ville += 1;
         }
+        // if (double_ville == 2)
+        // {
+        //     *valide += 2; // le score sera forcément incrémenté de 2
+        //     // et on fait l'appel sur la tuile dans la bonne direction
+        //     struct position P = T_direction_route()
+        // }
     }
 
     // incrémentation du score
@@ -923,8 +934,6 @@ int parcours_pts_ville(struct tuile_s Grille[143][143], int x, int y, int *valid
     if (Grille[x][y].centre != 'v' && Grille[x][y].centre != 'b' && *valide > 2)
         return 1;
 
-    int ville_fermee = 1;
-
     // Appels des tuiles adjacentes
     // Haut
     if (x > 0 && (Grille[x - 1][y].cotes[2] == 'v' || Grille[x - 1][y].cotes[2] == 'b' || Grille[x - 1][y].posee == 0) && (Grille[x][y].cotes[0] == 'v' || Grille[x][y].cotes[0] == 'b'))
@@ -933,7 +942,7 @@ int parcours_pts_ville(struct tuile_s Grille[143][143], int x, int y, int *valid
 
         if (double_ville == 2 && *valide > 2)
         {
-            Grille[x][y].visitee = 0;
+            Grille[x][y].visitee = 0; // pour pouvoir retraiter cette tuile plus tard
             return ville_fermee;
         }
     }
@@ -980,30 +989,43 @@ int parcours_pts_ville(struct tuile_s Grille[143][143], int x, int y, int *valid
 int verif_pions_ville(struct tuile_s Grille[143][143], int x, int y, int *cnt, int initPion)
 {
     struct position P;
+    char double_ville = 0;
+    int i;
 
     // Conditions d'arrêts pour s'il n'y a pas de problème, et qu'on n'incrémente pas
     if ((x < 0 || x > 143 || y < 0 || y > 143) || Grille[x][y].visitee == 1 || Grille[x][y].posee == 0)
         return 1;
 
-    if (Grille[x][y].pion.positionPion != -1)
-        return 0;
-
     Grille[x][y].visitee = 1;
 
-    // incrémentation déplacement
-    cnt += 1;
+    printf("Tuiles[%d][%d] : position pion = %d\n", x, y, Grille[x][y].pion.positionPion);
+    if (Grille[x][y].pion.positionPion != -1)
+    {
+        return 0;
+    }
+
 
     // Si c'est une fin de ville (mais pas la première du parcours)
     if (Grille[x][y].centre != 'v' && Grille[x][y].centre != 'b' && *cnt > 1)
         return 1;
 
+    // incrémentation déplacement
+    cnt += 1;
+
     int posable = 1;
 
-    // Appels des tuiles adjacentes
-    if (*cnt == 0 && Grille[x][y].centre != 'v' && Grille[x][y].centre != 'b' && initPion != 4)
+    // Appel forcé de la tuile adjacente si la première tuile est potentiellement une "double différente"
+    if (*cnt == 1 && Grille[x][y].centre != 'v' && Grille[x][y].centre != 'b' && initPion != 4)
     {
-        P = T_direction_route(initPion, x, y);
-        posable &= verif_pions_ville(Grille, P.x, P.y, cnt, initPion);
+        for (i = 0; i < 4; i++)
+            if (Grille[x][y].cotes[i] == 'v')
+                double_ville += 1;
+
+        if (double_ville == 2) // si c'est une double ville je veux faire l'appel sur les deux côtés distincts
+        {
+            P = T_direction_route(initPion, x, y);
+            posable &= verif_pions_ville(Grille, P.x, P.y, cnt, initPion);
+        }
     }
     else
     {
@@ -1167,6 +1189,7 @@ void parseur_csv(char *fname, struct tuile_s *Pile)
 
             Pile[i].pion.idPion = -1;
             Pile[i].pion.positionPion = -1;
+            Pile[i].posee = 0;
         }
     }
 
