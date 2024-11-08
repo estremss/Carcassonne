@@ -72,7 +72,7 @@ void parametre_partie(struct tuile_s *Pile, struct tuile_s Grille[143][143], int
         Joueur[i].ia = 1;
 
     Grille[NB_TUILES][NB_TUILES] = depiler(Pile, 0);
-    // melange(Pile);
+    melange(Pile);
 }
 
 int posable(struct tuile_s Grille[143][143], struct tuile_s T, int h, int b, int g, int d) // 1 mars
@@ -921,7 +921,7 @@ int parcours_pts_ville(struct tuile_s Grille[143][143], int x, int y, int *valid
     // Si la tuile n'est pas posée
     if (Grille[x][y].posee == 0)
     {
-        printf("Non posée Grille[%d][%d]\n", x, y);
+        // printf("Non posée Grille[%d][%d]\n", x, y);
         return 0;
     }
 
@@ -1118,7 +1118,7 @@ int verif_pions_ville(struct tuile_s Grille[143][143], int x, int y, int *cnt, i
 
     Grille[x][y].visitee = 1;
 
-    printf("Tuiles[%d][%d] : position pion = %d\n", x, y, Grille[x][y].pion.positionPion);
+    // printf("Tuiles[%d][%d] : position pion = %d\n", x, y, Grille[x][y].pion.positionPion);
     if (Grille[x][y].pion.positionPion != -1)
     {
         return 0;
