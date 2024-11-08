@@ -731,7 +731,7 @@ void affichage(struct tuile_s Grille[143][143], struct tuile_s Pile[72], int nb_
     int i, j;
     int coord_max = NB_TUILES + nb_tours, coord_min = NB_TUILES - nb_tours; // pour ne pas recalculer à chaque itération
 
-    system("clear");
+    // system("clear");
     if (nb_tours < 70)
     {
         printf("Tour : %d/72\n", nb_tours);

@@ -72,7 +72,7 @@ void parametre_partie(struct tuile_s *Pile, struct tuile_s Grille[143][143], int
         Joueur[i].ia = 1;
 
     Grille[NB_TUILES][NB_TUILES] = depiler(Pile, 0);
-    melange(Pile);
+    // melange(Pile);
 }
 
 int posable(struct tuile_s Grille[143][143], struct tuile_s T, int h, int b, int g, int d) // 1 mars
@@ -235,8 +235,8 @@ void poser_pion(struct tuile_s Grille[143][143], struct joueur_s *Joueur, int nb
                (position == 4 && Grille[x][y].centre == 'V') ||
                (Grille[x][y].centre == 'r' && position == 4 && verif_route_iteratif(Grille, x, y, position) != 0) ||
                (position < 4 && Grille[x][y].cotes[position] == 'r' && verif_route_iteratif(Grille, x, y, position) != 0) ||
-               (Grille[x][y].centre == 'v' && position == 4 && pions_ville(Grille, x, y, position) == 0) ||
-               (Grille[x][y].cotes[position] == 'v' && position < 4 && pions_ville(Grille, x, y, position) == 0) ||
+               ((Grille[x][y].centre == 'v' || Grille[x][y].centre == 'b') && position == 4 && pions_ville(Grille, x, y, position) == 0) ||
+               ((Grille[x][y].cotes[position] == 'v' || Grille[x][y].cotes[position] == 'b') && position < 4 && pions_ville(Grille, x, y, position) == 0) ||
                (position < 0 || position > 4))
         {
             // DEBUG
@@ -879,7 +879,10 @@ void pts_ville(struct tuile_s Grille[143][143], struct joueur_s *Joueurs, int x,
 
         for (i = 0; i < 143; i++)
             for (j = 0; j < 143; j++)
+            {
                 Grille[i][j] = G_Traitees[i][j];
+                Grille[i][j].visitee = 0;
+            }
     }
 }
 
@@ -918,7 +921,7 @@ int parcours_pts_ville(struct tuile_s Grille[143][143], int x, int y, int *valid
     // Si la tuile n'est pas posée
     if (Grille[x][y].posee == 0)
     {
-        // printf("Non posée Grille[%d][%d]\n", x, y);
+        printf("Non posée Grille[%d][%d]\n", x, y);
         return 0;
     }
 
@@ -1025,10 +1028,9 @@ int parcours_pts_ville_FP(struct tuile_s Grille[143][143], int x, int y, int *va
     for (i = 0; i < 4; i++)
         if ((Grille[x][y].cotes[i] == 'v' || Grille[x][y].cotes[i] == 'b') && Grille[x][y].pion.positionPion == i)
             pions_ville[Grille[x][y].pion.idPion] += 1;
-        
+
     if ((Grille[x][y].centre == 'v' || Grille[x][y].centre == 'b') && Grille[x][y].pion.positionPion == 4)
         pions_ville[Grille[x][y].pion.idPion] += 1;
-
 
     int ville_fermee = 1;
 
@@ -1127,24 +1129,23 @@ int verif_pions_ville(struct tuile_s Grille[143][143], int x, int y, int *cnt, i
         return 1;
 
     // incrémentation déplacement
-    cnt += 1;
+    *cnt += 1;
 
     int posable = 1;
 
-    // Appel forcé de la tuile adjacente si la première tuile est potentiellement une "double différente"
-    if (*cnt == 1 && Grille[x][y].centre != 'v' && Grille[x][y].centre != 'b' && initPion != 4)
-    {
-        for (i = 0; i < 4; i++)
-            if (Grille[x][y].cotes[i] == 'v')
-                double_ville += 1;
+    for (i = 0; i < 4; i++)
+        if (Grille[x][y].cotes[i] == 'v' || Grille[x][y].cotes[i] == 'v')
+            double_ville += 1;
 
-        if (double_ville == 2) // si c'est une double ville je veux faire l'appel sur les deux côtés distincts
-        {
-            P = T_direction_route(initPion, x, y);
-            posable &= verif_pions_ville(Grille, P.x, P.y, cnt, initPion);
-        }
+    // Appel forcé de la tuile adjacente si la première tuile est potentiellement une "double différente"
+    if (*cnt == 1 && Grille[x][y].centre != 'v' && Grille[x][y].centre != 'b' && initPion != 4 && double_ville == 2)
+    {
+
+        printf("G[%d][%d] est une double ville", x, y);
+        P = T_direction_route(initPion, x, y);
+        posable &= verif_pions_ville(Grille, P.x, P.y, cnt, P.pere);
     }
-    else
+    else if (Grille[x][y].centre == 'b' || Grille[x][y].centre == 'v' || double_ville != 2)
     {
         // Haut
         if (x > 0 && (Grille[x - 1][y].cotes[2] == 'v' || Grille[x - 1][y].cotes[2] == 'b' || Grille[x - 1][y].posee == 0) && (Grille[x][y].cotes[0] == 'v' || Grille[x][y].cotes[0] == 'b'))
